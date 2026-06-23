@@ -5,81 +5,45 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PaletForma — Distribución de Paquetes</title>
 <style>
-/* ── Tokens ─────────────────────────────────────────── */
 :root {
-  --bg:       #09182a;
-  --surface:  #0f2340;
-  --surface2: #152c50;
-  --border:   #1c3a68;
-  --accent:   #f5a623;
-  --teal:     #4ec9b0;
-  --text:     #d4e4f4;
-  --muted:    #4e7298;
-  --danger:   #e05252;
-  --ok:       #4ec9b0;
-  --r:        6px;
-  --mono:     'Courier New', Courier, monospace;
+  --bg:#09182a; --surface:#0f2340; --surface2:#152c50; --border:#1c3a68;
+  --accent:#f5a623; --teal:#4ec9b0; --text:#d4e4f4; --muted:#4e7298;
+  --danger:#e05252; --ok:#4ec9b0; --r:6px; --mono:'Courier New',Courier,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
 body{background:var(--bg);color:var(--text);font-family:var(--mono);display:flex;flex-direction:column;}
 
-/* ── Header ─────────────────────────────────────────── */
-header{
-  background:var(--surface);
-  border-bottom:2px solid var(--border);
-  padding:10px 20px;
-  display:flex;align-items:center;gap:16px;
-  flex-shrink:0;
-}
+header{background:var(--surface);border-bottom:2px solid var(--border);padding:10px 20px;
+  display:flex;align-items:center;gap:16px;flex-shrink:0;}
 .logo{font-size:20px;font-weight:bold;letter-spacing:3px;color:var(--accent);}
 .logo span{color:var(--teal);}
 .tagline{font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;}
 
-/* ── App layout ──────────────────────────────────────── */
 .app{display:flex;flex:1;overflow:hidden;min-height:0;}
 
-/* ── Sidebars ────────────────────────────────────────── */
-.sidebar{
-  width:230px;min-width:230px;
-  background:var(--surface);
-  border-right:1px solid var(--border);
-  padding:12px;
-  overflow-y:auto;
-  display:flex;flex-direction:column;gap:14px;
-  flex-shrink:0;
-}
+.sidebar{width:230px;min-width:230px;background:var(--surface);border-right:1px solid var(--border);
+  padding:12px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;flex-shrink:0;}
 .sidebar-right{border-right:none;border-left:1px solid var(--border);}
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
 
-.sec-title{
-  font-size:9px;letter-spacing:2.5px;color:var(--muted);
-  text-transform:uppercase;border-bottom:1px solid var(--border);
-  padding-bottom:6px;margin-bottom:8px;
-}
+.sec-title{font-size:9px;letter-spacing:2.5px;color:var(--muted);text-transform:uppercase;
+  border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:8px;}
 
-/* ── Form fields ─────────────────────────────────────── */
 .field{margin-bottom:7px;}
 .field label{display:block;font-size:10px;color:var(--muted);margin-bottom:3px;letter-spacing:.8px;}
-.field input[type=number]{
-  width:100%;background:var(--surface2);border:1px solid var(--border);
-  color:var(--text);font-family:var(--mono);font-size:13px;
-  padding:5px 8px;border-radius:var(--r);outline:none;transition:border-color .15s;
-}
+.field input[type=number]{width:100%;background:var(--surface2);border:1px solid var(--border);
+  color:var(--text);font-family:var(--mono);font-size:13px;padding:5px 8px;
+  border-radius:var(--r);outline:none;transition:border-color .15s;}
 .field input[type=number]:focus{border-color:var(--accent);}
 .field-row{display:flex;gap:6px;}
 .field-row .field{flex:1;}
 .unit{font-size:9px;color:var(--muted);}
 
-/* ── Buttons ─────────────────────────────────────────── */
-.btn{
-  display:block;width:100%;padding:7px 10px;
-  border:1px solid var(--border);background:var(--surface2);
-  color:var(--text);font-family:var(--mono);font-size:11px;
-  border-radius:var(--r);cursor:pointer;text-align:center;
-  transition:all .15s;margin-bottom:5px;
-}
+.btn{display:block;width:100%;padding:7px 10px;border:1px solid var(--border);background:var(--surface2);
+  color:var(--text);font-family:var(--mono);font-size:11px;border-radius:var(--r);cursor:pointer;
+  text-align:center;transition:all .15s;margin-bottom:5px;}
 .btn:hover{border-color:var(--accent);color:var(--accent);}
 .btn-teal:hover{border-color:var(--teal);color:var(--teal);}
 .btn-danger{color:var(--muted);}
@@ -87,18 +51,13 @@ header{
 .btn-group{display:flex;gap:5px;margin-bottom:5px;}
 .btn-group .btn{flex:1;margin:0;}
 .preset-row{display:flex;gap:4px;margin-top:4px;}
-.preset-btn{
-  flex:1;padding:4px;font-size:10px;font-family:var(--mono);
-  background:var(--surface2);border:1px solid var(--border);
-  color:var(--muted);border-radius:4px;cursor:pointer;transition:all .15s;
-}
+.preset-btn{flex:1;padding:4px;font-size:10px;font-family:var(--mono);background:var(--surface2);
+  border:1px solid var(--border);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .15s;}
 .preset-btn:hover{border-color:var(--accent);color:var(--accent);}
 
-/* ── Toggle ──────────────────────────────────────────── */
 .toggle-row{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);margin-bottom:6px;}
 .toggle-row input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;}
 
-/* ── Stats ───────────────────────────────────────────── */
 .stat-block{margin-bottom:10px;}
 .stat-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;}
 .stat-label{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
@@ -107,50 +66,31 @@ header{
 .stat-value.warn{color:var(--danger);}
 .stat-value.neutral{color:var(--muted);font-size:12px;}
 
-/* ── Formation cards ─────────────────────────────────── */
-.formation-card{
-  border:1px solid var(--border);border-radius:var(--r);
-  padding:8px;margin-bottom:8px;cursor:pointer;transition:all .15s;
-}
+.formation-card{border:1px solid var(--border);border-radius:var(--r);padding:8px;
+  margin-bottom:8px;cursor:pointer;transition:all .15s;}
 .formation-card:hover{border-color:var(--accent);}
-.formation-card.active{border-color:var(--teal);background:rgba(78,201,176,.05);}
+.formation-card.active{border-color:var(--teal);background:rgba(78,201,176,.06);}
 .fc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;}
 .fc-name{font-size:12px;font-weight:bold;color:var(--text);}
 .fc-count{font-size:11px;color:var(--accent);}
 .fc-desc{font-size:9px;color:var(--muted);margin-bottom:5px;letter-spacing:.5px;}
-.fc-mini{
-  width:100%;height:56px;display:block;
-  background:var(--bg);border-radius:3px;
-}
+.fc-badge{font-size:8px;background:rgba(78,201,176,.15);color:var(--teal);
+  padding:1px 5px;border-radius:3px;border:1px solid rgba(78,201,176,.3);}
+.fc-mini{width:100%;height:56px;display:block;background:var(--bg);border-radius:3px;}
 
-/* ── Legend ──────────────────────────────────────────── */
 .legend{display:flex;gap:14px;justify-content:center;margin-top:8px;flex-shrink:0;}
 .legend-item{display:flex;align-items:center;gap:5px;font-size:9px;color:var(--muted);}
 .legend-box{width:14px;height:10px;border-radius:2px;}
 
-/* ── Canvas area ─────────────────────────────────────── */
-.canvas-area{
-  flex:1;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  padding:16px;gap:0;min-width:0;
-  position:relative;
-}
-#paletCanvas{
-  border:1px solid var(--border);border-radius:var(--r);
-  cursor:crosshair;background:#07111e;
-  display:block;max-width:100%;
-}
+.canvas-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:16px;gap:0;min-width:0;position:relative;}
+#paletCanvas{border:1px solid var(--border);border-radius:var(--r);cursor:crosshair;
+  background:#07111e;display:block;max-width:100%;}
 
-/* ── Status bar ──────────────────────────────────────── */
-.status-bar{
-  margin-top:8px;flex-shrink:0;
-  font-size:10px;color:var(--muted);
-  background:var(--surface);padding:4px 16px;
-  border-radius:12px;border:1px solid var(--border);
-  letter-spacing:.5px;white-space:nowrap;
-}
+.status-bar{margin-top:8px;flex-shrink:0;font-size:10px;color:var(--muted);
+  background:var(--surface);padding:4px 16px;border-radius:12px;border:1px solid var(--border);
+  letter-spacing:.5px;white-space:nowrap;}
 
-/* ── Shortcuts block ─────────────────────────────────── */
 .shortcut-list{font-size:10px;color:var(--muted);line-height:2.2;}
 .shortcut-list b{color:var(--text);}
 </style>
@@ -159,14 +99,13 @@ header{
 
 <header>
   <div class="logo">PALET<span>FORMA</span></div>
-  <div class="tagline">Distribución de paquetes en palés &mdash; Vista superior capa a capa</div>
+  <div class="tagline">Distribución de paquetes en palés &mdash; Vista superior</div>
 </header>
 
 <div class="app">
 
-  <!-- ════════ LEFT SIDEBAR ════════ -->
+  <!-- LEFT SIDEBAR -->
   <div class="sidebar">
-
     <div>
       <div class="sec-title">📦 Palé</div>
       <div class="field-row">
@@ -216,7 +155,7 @@ header{
         <button class="btn btn-teal" onclick="duplicateSelected()">⧉ Duplic.</button>
       </div>
       <button class="btn btn-danger" onclick="deleteSelected()">🗑 Borrar seleccionado</button>
-      <button class="btn btn-danger" onclick="clearAll()">🧹 Limpiar todo el palé</button>
+      <button class="btn btn-danger" onclick="clearAll()">🧹 Limpiar todo</button>
     </div>
 
     <div>
@@ -229,19 +168,18 @@ header{
         <b>Esc</b> — Deseleccionar<br>
         <b>Clic vacío</b> — Añadir paquete<br>
         <b>Doble clic</b> — Rotar paquete<br>
-        <b>Arrastrar</b> — Mover paquete
+        <b>Arrastrar</b> — Mover (sin solapamiento)
       </div>
     </div>
-
   </div>
 
-  <!-- ════════ CENTER CANVAS ════════ -->
+  <!-- CENTER CANVAS -->
   <div class="canvas-area">
     <canvas id="paletCanvas" width="680" height="500"></canvas>
     <div class="legend">
       <div class="legend-item">
         <div class="legend-box" style="background:rgba(78,201,176,.6);border:1px solid #4ec9b0;"></div>
-        Orient. A (normal)
+        Orient. A
       </div>
       <div class="legend-item">
         <div class="legend-box" style="background:rgba(245,166,35,.6);border:1px solid #f5a623;"></div>
@@ -251,13 +189,16 @@ header{
         <div class="legend-box" style="background:rgba(245,166,35,.9);border:2px dashed #f5a623;"></div>
         Seleccionado
       </div>
+      <div class="legend-item">
+        <div class="legend-box" style="background:rgba(224,82,82,.4);border:1px solid #e05252;"></div>
+        Colisión bloqueada
+      </div>
     </div>
-    <div class="status-bar" id="statusBar">Clic sobre el palé para añadir paquetes · Arrastra para mover</div>
+    <div class="status-bar" id="statusBar">Clic sobre el palé para añadir · Arrastra para mover (sin solapamiento)</div>
   </div>
 
-  <!-- ════════ RIGHT SIDEBAR ════════ -->
+  <!-- RIGHT SIDEBAR -->
   <div class="sidebar sidebar-right">
-
     <div>
       <div class="sec-title">📊 Estadísticas</div>
       <div class="stat-block">
@@ -279,573 +220,609 @@ header{
         </div>
       </div>
     </div>
-
     <div>
       <div class="sec-title">✨ Auto-generador</div>
       <div id="formationsList"></div>
     </div>
-
   </div>
-</div><!-- .app -->
+</div>
 
 <script>
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
 //  STATE
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
 const S = {
-  pallet:  { w: 1200, h: 800 },
-  pkg:     { w: 300,  h: 200, z: 150, kg: 15 },
-  pkgs:    [],           // [{id,x,y,w,h,rotated}]
-  sel:     null,         // selected id
-  drag:    null,         // {id, startCx, startCy, origX, origY}
-  nextId:  1,
-  history: [],
-  snap:    true,
-  snapSz:  10,
+  pallet: { w:1200, h:800 },
+  pkg:    { w:300, h:200, z:150, kg:15 },
+  pkgs:   [],
+  sel:    null,
+  drag:   null,
+  nextId: 1,
+  history:[],
+  snap:   true,
+  snapSz: 10,
   activeFm: null,
+  blocked: false,   // visual feedback for collision
 };
 
-// ═══════════════════════════════════════════════════════
-//  CANVAS SETUP
-// ═══════════════════════════════════════════════════════
-const CV   = document.getElementById('paletCanvas');
-const ctx  = CV.getContext('2d');
-const CW   = CV.width;
-const CH   = CV.height;
-const MAR  = 38;
+// ════════════════════════════════════════════════════════
+//  CANVAS
+// ════════════════════════════════════════════════════════
+const CV  = document.getElementById('paletCanvas');
+const ctx = CV.getContext('2d');
+const CW  = CV.width, CH = CV.height, MAR = 38;
 
 function scale()  { return Math.min((CW-2*MAR)/S.pallet.w, (CH-2*MAR)/S.pallet.h); }
 function origin() {
-  const s = scale();
-  return {
-    x: MAR + (CW - 2*MAR - S.pallet.w * s) / 2,
-    y: MAR + (CH - 2*MAR - S.pallet.h * s) / 2,
-  };
+  const s=scale();
+  return { x: MAR+(CW-2*MAR-S.pallet.w*s)/2, y: MAR+(CH-2*MAR-S.pallet.h*s)/2 };
 }
-function snap(v)  { return S.snap ? Math.round(v / S.snapSz) * S.snapSz : v; }
-function c2mm(cx, cy) {
-  const s = scale(), o = origin();
-  return { x: (cx - o.x) / s, y: (cy - o.y) / s };
-}
-function pkgAt(cx, cy) {
-  const m = c2mm(cx, cy);
-  for (let i = S.pkgs.length - 1; i >= 0; i--) {
-    const p = S.pkgs[i];
-    if (m.x >= p.x && m.x <= p.x+p.w && m.y >= p.y && m.y <= p.y+p.h) return p;
+function snapV(v) { return S.snap ? Math.round(v/S.snapSz)*S.snapSz : v; }
+function c2mm(cx,cy) { const s=scale(),o=origin(); return {x:(cx-o.x)/s, y:(cy-o.y)/s}; }
+function pkgAt(cx,cy) {
+  const m=c2mm(cx,cy);
+  for (let i=S.pkgs.length-1;i>=0;i--) {
+    const p=S.pkgs[i];
+    if (m.x>=p.x&&m.x<=p.x+p.w&&m.y>=p.y&&m.y<=p.y+p.h) return p;
   }
   return null;
 }
 
-// ═══════════════════════════════════════════════════════
-//  RENDER MAIN CANVAS
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
+//  COLLISION DETECTION
+//  eps=0.5mm: packages can touch (share edge) but not overlap
+// ════════════════════════════════════════════════════════
+const EPS = 0.5;
+function overlaps(a, b) {
+  return !(a.x+a.w <= b.x+EPS || b.x+b.w <= a.x+EPS ||
+           a.y+a.h <= b.y+EPS || b.y+b.h <= a.y+EPS);
+}
+function hasCollision(pkg, excludeId) {
+  return S.pkgs.some(p => p.id !== excludeId && overlaps(pkg, p));
+}
+
+// ════════════════════════════════════════════════════════
+//  RENDER
+// ════════════════════════════════════════════════════════
 function render() {
-  ctx.clearRect(0, 0, CW, CH);
+  ctx.clearRect(0,0,CW,CH);
+  const s=scale(), o=origin(), pw=S.pallet.w*s, ph=S.pallet.h*s;
+  ctx.save(); ctx.translate(o.x,o.y);
 
-  const s  = scale();
-  const o  = origin();
-  const pw = S.pallet.w * s;
-  const ph = S.pallet.h * s;
-
-  ctx.save();
-  ctx.translate(o.x, o.y);
-
-  // ── Pallet base (wood gradient) ──
-  const grad = ctx.createLinearGradient(0, 0, pw, ph);
-  grad.addColorStop(0,   '#c8a460');
-  grad.addColorStop(.45, '#d4b476');
-  grad.addColorStop(1,   '#b89048');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, pw, ph);
+  // Pallet base
+  const grad=ctx.createLinearGradient(0,0,pw,ph);
+  grad.addColorStop(0,'#c8a460'); grad.addColorStop(.45,'#d4b476'); grad.addColorStop(1,'#b89048');
+  ctx.fillStyle=grad; ctx.fillRect(0,0,pw,ph);
 
   // Wood planks
-  ctx.strokeStyle = 'rgba(140,95,30,.35)';
-  ctx.lineWidth   = 1;
-  for (let y = 55; y < S.pallet.h; y += 55) {
-    ctx.beginPath(); ctx.moveTo(0, y*s); ctx.lineTo(pw, y*s); ctx.stroke();
-  }
-
-  // Grid overlay (100 mm)
-  ctx.strokeStyle = 'rgba(70,120,200,.18)';
-  ctx.lineWidth   = .6;
-  ctx.setLineDash([3,6]);
-  for (let x = 100; x < S.pallet.w; x += 100) {
-    ctx.beginPath(); ctx.moveTo(x*s,0); ctx.lineTo(x*s,ph); ctx.stroke();
-  }
-  for (let y = 100; y < S.pallet.h; y += 100) {
+  ctx.strokeStyle='rgba(140,95,30,.35)'; ctx.lineWidth=1;
+  for (let y=55;y<S.pallet.h;y+=55) {
     ctx.beginPath(); ctx.moveTo(0,y*s); ctx.lineTo(pw,y*s); ctx.stroke();
   }
+
+  // Grid (100mm)
+  ctx.strokeStyle='rgba(70,120,200,.18)'; ctx.lineWidth=.6; ctx.setLineDash([3,6]);
+  for (let x=100;x<S.pallet.w;x+=100) { ctx.beginPath(); ctx.moveTo(x*s,0); ctx.lineTo(x*s,ph); ctx.stroke(); }
+  for (let y=100;y<S.pallet.h;y+=100) { ctx.beginPath(); ctx.moveTo(0,y*s); ctx.lineTo(pw,y*s); ctx.stroke(); }
   ctx.setLineDash([]);
 
-  // ── Packages ──
-  for (const p of S.pkgs) {
-    drawPackage(ctx, p, s, p.id === S.sel);
-  }
+  // Packages
+  for (const p of S.pkgs) drawPkg(ctx, p, s, p.id===S.sel);
 
-  // ── Pallet border ──
-  ctx.strokeStyle = '#f5a623';
-  ctx.lineWidth   = 2.5;
-  ctx.strokeRect(0, 0, pw, ph);
+  // Pallet border
+  ctx.strokeStyle='#f5a623'; ctx.lineWidth=2.5; ctx.strokeRect(0,0,pw,ph);
 
   // Corner ticks
-  const T = 8;
-  ctx.lineWidth = 1.5;
+  const T=8; ctx.lineWidth=1.5;
   [[0,0],[pw,0],[0,ph],[pw,ph]].forEach(([cx2,cy2]) => {
-    const sx = cx2===0?1:-1, sy = cy2===0?1:-1;
-    ctx.beginPath();
-    ctx.moveTo(cx2+sx*T, cy2); ctx.lineTo(cx2, cy2); ctx.lineTo(cx2, cy2+sy*T);
-    ctx.stroke();
+    const sx=cx2===0?1:-1, sy=cy2===0?1:-1;
+    ctx.beginPath(); ctx.moveTo(cx2+sx*T,cy2); ctx.lineTo(cx2,cy2); ctx.lineTo(cx2,cy2+sy*T); ctx.stroke();
   });
 
   // Dimension labels
-  ctx.fillStyle   = '#f5a623';
-  ctx.font        = '10px Courier New';
-  ctx.textAlign   = 'center';
-  ctx.textBaseline = 'top';
+  ctx.fillStyle='#f5a623'; ctx.font='10px Courier New'; ctx.textAlign='center'; ctx.textBaseline='top';
   ctx.fillText(`${S.pallet.w} mm`, pw/2, ph+10);
-  ctx.save();
-  ctx.rotate(-Math.PI/2);
-  ctx.textBaseline = 'bottom';
-  ctx.fillText(`${S.pallet.h} mm`, -ph/2, -10);
-  ctx.restore();
+  ctx.save(); ctx.rotate(-Math.PI/2); ctx.textBaseline='bottom';
+  ctx.fillText(`${S.pallet.h} mm`, -ph/2, -10); ctx.restore();
 
   ctx.restore();
-
   updateStats();
-  updateFormationCards();
+  updateFmCards();
 }
 
-function drawPackage(c, p, s, isSel) {
+function drawPkg(c, p, s, isSel) {
   const px=p.x*s, py=p.y*s, pw=p.w*s, ph=p.h*s;
 
+  // Collision flash
+  if (isSel && S.blocked) {
+    c.fillStyle='rgba(224,82,82,.15)'; c.fillRect(px-2,py-2,pw+4,ph+4);
+  }
+
   // Shadow
-  c.fillStyle = 'rgba(0,0,0,.22)';
-  c.fillRect(px+2, py+2, pw, ph);
+  c.fillStyle='rgba(0,0,0,.22)'; c.fillRect(px+2,py+2,pw,ph);
 
   // Fill
-  if (isSel)       c.fillStyle = 'rgba(245,166,35,.85)';
-  else if(p.rotated) c.fillStyle = 'rgba(245,166,35,.52)';
-  else               c.fillStyle = 'rgba(78,201,176,.52)';
-  c.fillRect(px, py, pw, ph);
+  if (isSel)        c.fillStyle='rgba(245,166,35,.85)';
+  else if(p.rotated) c.fillStyle='rgba(245,166,35,.52)';
+  else               c.fillStyle='rgba(78,201,176,.52)';
+  c.fillRect(px,py,pw,ph);
 
-  // Cross mark (packaging symbol)
-  if (pw > 22 && ph > 18) {
-    c.strokeStyle = isSel ? 'rgba(120,70,0,.4)' : (p.rotated?'rgba(180,110,10,.35)':'rgba(30,130,110,.35)');
-    c.lineWidth   = .7;
-    c.beginPath();
-    c.moveTo(px,py); c.lineTo(px+pw,py+ph);
-    c.moveTo(px+pw,py); c.lineTo(px,py+ph);
-    c.stroke();
+  // Cross mark
+  if (pw>22&&ph>18) {
+    c.strokeStyle=isSel?'rgba(120,70,0,.4)':(p.rotated?'rgba(180,110,10,.35)':'rgba(30,130,110,.35)');
+    c.lineWidth=.7;
+    c.beginPath(); c.moveTo(px,py); c.lineTo(px+pw,py+ph);
+    c.moveTo(px+pw,py); c.lineTo(px,py+ph); c.stroke();
   }
 
   // Border
   if (isSel) {
-    c.strokeStyle = '#f5a623'; c.lineWidth = 2.5; c.setLineDash([5,3]);
+    c.strokeStyle=S.blocked?'#e05252':'#f5a623'; c.lineWidth=2.5; c.setLineDash([5,3]);
   } else {
-    c.strokeStyle = p.rotated ? '#c97c14' : '#3ab09a'; c.lineWidth = 1.5; c.setLineDash([]);
+    c.strokeStyle=p.rotated?'#c97c14':'#3ab09a'; c.lineWidth=1.5; c.setLineDash([]);
   }
-  c.strokeRect(px, py, pw, ph);
-  c.setLineDash([]);
+  c.strokeRect(px,py,pw,ph); c.setLineDash([]);
 
   // Label
-  if (pw > 32 && ph > 22) {
-    c.fillStyle     = isSel ? '#2a0e00' : '#071a14';
-    c.font          = `bold ${Math.min(11,Math.max(7,pw/8))}px Courier New`;
-    c.textAlign     = 'center';
-    c.textBaseline  = 'middle';
+  if (pw>32&&ph>22) {
+    c.fillStyle=isSel?'#2a0e00':'#071a14';
+    c.font=`bold ${Math.min(11,Math.max(7,pw/8))}px Courier New`;
+    c.textAlign='center'; c.textBaseline='middle';
     c.fillText(`${p.w}×${p.h}`, px+pw/2, py+ph/2);
   }
 }
 
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
 //  STATS
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
 function updateStats() {
-  const n      = S.pkgs.length;
-  const area   = S.pkgs.reduce((a,p) => a+p.w*p.h, 0);
-  const pArea  = S.pallet.w * S.pallet.h;
-  const cov    = pArea ? (area/pArea*100).toFixed(1) : 0;
-  const weight = (n * S.pkg.kg).toFixed(1);
-
-  document.getElementById('statCount').textContent  = n;
-  document.getElementById('statCov').textContent    = cov + '%';
-  document.getElementById('statWeight').textContent = weight + ' kg';
-
-  // Overlap detection
-  let ol = false;
-  outer: for (let i=0;i<S.pkgs.length;i++)
-    for (let j=i+1;j<S.pkgs.length;j++)
-      if (rectsOlap(S.pkgs[i],S.pkgs[j])){ol=true;break outer;}
-
-  const el = document.getElementById('statState');
-  if (n===0)     { el.textContent='—';            el.className='stat-value neutral'; }
-  else if (ol)   { el.textContent='⚠ Solapamiento'; el.className='stat-value warn'; }
-  else           { el.textContent='✓ Correcto';   el.className='stat-value ok'; }
+  const n=S.pkgs.length;
+  const area=S.pkgs.reduce((a,p)=>a+p.w*p.h,0);
+  const pArea=S.pallet.w*S.pallet.h;
+  const cov=pArea?(area/pArea*100).toFixed(1):0;
+  const weight=(n*S.pkg.kg).toFixed(1);
+  document.getElementById('statCount').textContent=n;
+  document.getElementById('statCov').textContent=cov+'%';
+  document.getElementById('statWeight').textContent=weight+' kg';
+  let ol=false;
+  outer:for(let i=0;i<S.pkgs.length;i++)
+    for(let j=i+1;j<S.pkgs.length;j++)
+      if(overlaps(S.pkgs[i],S.pkgs[j])){ol=true;break outer;}
+  const el=document.getElementById('statState');
+  if(n===0){el.textContent='—';el.className='stat-value neutral';}
+  else if(ol){el.textContent='⚠ Solapamiento';el.className='stat-value warn';}
+  else{el.textContent='✓ Correcto';el.className='stat-value ok';}
 }
 
-function rectsOlap(a, b) {
-  return !(a.x+a.w<=b.x || b.x+b.w<=a.x || a.y+a.h<=b.y || b.y+b.h<=a.y);
+// ════════════════════════════════════════════════════════
+//  FORMATION ALGORITHMS
+//  All center the arrangement on the pallet.
+// ════════════════════════════════════════════════════════
+
+/** Simple grid, centered */
+function fillGrid(PW, PH, pkgW, pkgH, rotated) {
+  const cols=Math.floor(PW/pkgW), rows=Math.floor(PH/pkgH);
+  if (!cols||!rows) return [];
+  const sx=(PW-cols*pkgW)/2, sy=(PH-rows*pkgH)/2;
+  const R=[]; let id=1;
+  for(let r=0;r<rows;r++)
+    for(let c=0;c<cols;c++)
+      R.push({id:id++,x:sx+c*pkgW,y:sy+r*pkgH,w:pkgW,h:pkgH,rotated});
+  return R;
 }
 
-// ═══════════════════════════════════════════════════════
-//  FORMATIONS
-// ═══════════════════════════════════════════════════════
-const FDEFS = [
-  { id:'lineal',  name:'Lineal A',    desc:'Filas · orientación original' },
-  { id:'rotado',  name:'Lineal B',    desc:'Filas · girado 90°' },
-  { id:'espiga',  name:'Espiga',      desc:'Filas alternas desplazadas ½' },
-  { id:'mixta',   name:'Mixta',       desc:'Filas alternando orientación' },
-  { id:'columnas',name:'Columnas',    desc:'Columnas alternando orientación' },
-];
+/**
+ * Espiga (trabado): brick bond, centered.
+ * Even rows: normal start. Odd rows: offset W/2.
+ * The bounding box of even+odd is used to center the whole pattern.
+ */
+function fillEspiga(PW, PH, pkgW, pkgH, rotated) {
+  const rows=Math.floor(PH/pkgH);
+  if (!rows) return [];
+  const evenCols=Math.floor(PW/pkgW);
+  if (!evenCols) return [];
 
-function computeFm(id) {
-  const PW = S.pallet.w, PH = S.pallet.h;
-  const W  = S.pkg.w,    H  = S.pkg.h;
-  const R  = [];
-  let   n  = 1;
+  // How many packages fit in odd rows (offset by pkgW/2)?
+  const oddCols=Math.floor((PW-pkgW/2)/pkgW);
 
-  switch (id) {
-    case 'lineal':
-      for (let y=0; y+H<=PH; y+=H)
-        for (let x=0; x+W<=PW; x+=W)
-          R.push({id:n++, x, y, w:W, h:H, rotated:false});
-      break;
+  // Bounding box width of the whole pattern
+  const evenWidth=evenCols*pkgW;
+  const oddWidth=oddCols>0 ? pkgW/2+oddCols*pkgW : 0;
+  const bboxW=Math.max(evenWidth,oddWidth);
+  const leftMargin=(PW-bboxW)/2;
+  const topMargin=(PH-rows*pkgH)/2;
 
-    case 'rotado':
-      for (let y=0; y+W<=PH; y+=W)
-        for (let x=0; x+H<=PW; x+=H)
-          R.push({id:n++, x, y, w:H, h:W, rotated:true});
-      break;
-
-    case 'espiga': {
-      let row=0;
-      for (let y=0; y+H<=PH; y+=H, row++) {
-        const off = (row%2) ? W/2 : 0;
-        for (let x=off; x+W<=PW; x+=W)
-          R.push({id:n++, x, y, w:W, h:H, rotated:false});
-      }
-      break;
-    }
-
-    case 'mixta': {
-      let y=0, row=0;
-      while (y < PH) {
-        if (row%2===0) {
-          if (y+H>PH) break;
-          for (let x=0; x+W<=PW; x+=W) R.push({id:n++,x,y,w:W,h:H,rotated:false});
-          y+=H;
-        } else {
-          if (y+W>PH) break;
-          for (let x=0; x+H<=PW; x+=H) R.push({id:n++,x,y,w:H,h:W,rotated:true});
-          y+=W;
-        }
-        row++;
-      }
-      break;
-    }
-
-    case 'columnas': {
-      let x=0, col=0;
-      while (x < PW) {
-        if (col%2===0) {
-          if (x+W>PW) break;
-          for (let y=0; y+H<=PH; y+=H) R.push({id:n++,x,y,w:W,h:H,rotated:false});
-          x+=W;
-        } else {
-          if (x+H>PW) break;
-          for (let y=0; y+W<=PH; y+=W) R.push({id:n++,x,y,w:H,h:W,rotated:true});
-          x+=H;
-        }
-        col++;
-      }
-      break;
-    }
+  const R=[]; let id=1;
+  for(let r=0;r<rows;r++) {
+    const odd=r%2===1;
+    const startX=odd ? leftMargin+pkgW/2 : leftMargin;
+    const cols=odd ? oddCols : evenCols;
+    for(let c=0;c<cols;c++)
+      R.push({id:id++,x:startX+c*pkgW,y:topMargin+r*pkgH,w:pkgW,h:pkgH,rotated});
   }
   return R;
 }
 
+/**
+ * Mixta trabada: alternate rows between two orientations.
+ * Tries both starting orientations, picks the one with more packages.
+ * Rows are individually centered, whole stack centered vertically.
+ * "Trabado" because different orientations make joints non-continuous.
+ */
+function fillMixta(PW, PH, W, H) {
+  function build(startRot) {
+    const rows=[];
+    let y=0;
+    while(y<PH) {
+      const rot=(rows.length%2===0)?startRot:!startRot;
+      const rw=rot?H:W, rh=rot?W:H;
+      if(y+rh>PH) break;
+      rows.push({rw,rh,rot});
+      y+=rh;
+    }
+    const totalH=rows.reduce((s,r)=>s+r.rh,0);
+    let cy=(PH-totalH)/2;
+    const pkgs=[]; let id=1;
+    for(const row of rows) {
+      const cols=Math.floor(PW/row.rw);
+      const sx=(PW-cols*row.rw)/2;
+      for(let c=0;c<cols;c++)
+        pkgs.push({id:id++,x:sx+c*row.rw,y:cy,w:row.rw,h:row.rh,rotated:row.rot});
+      cy+=row.rh;
+    }
+    return pkgs;
+  }
+  const a=build(false), b=build(true);
+  const res=a.length>=b.length?a:b;
+  res.forEach((p,i)=>p.id=i+1);
+  return res;
+}
+
+/**
+ * Columnas trabadas: alternate columns between orientations.
+ * Centered.
+ */
+function fillColumnas(PW, PH, W, H) {
+  function build(startRot) {
+    const cols=[];
+    let x=0;
+    while(x<PW) {
+      const rot=(cols.length%2===0)?startRot:!startRot;
+      const cw=rot?H:W, ch=rot?W:H;
+      if(x+cw>PW) break;
+      cols.push({x,cw,ch,rot});
+      x+=cw;
+    }
+    const totalW=cols.reduce((s,c)=>s+c.cw,0);
+    const offsetX=(PW-totalW)/2;
+    const pkgs=[]; let id=1;
+    for(const col of cols) {
+      const rows=Math.floor(PH/col.ch);
+      const sy=(PH-rows*col.ch)/2;
+      for(let r=0;r<rows;r++)
+        pkgs.push({id:id++,x:offsetX+col.x,y:sy+r*col.ch,w:col.cw,h:col.ch,rotated:col.rot});
+    }
+    return pkgs;
+  }
+  const a=build(false),b=build(true);
+  const res=a.length>=b.length?a:b;
+  res.forEach((p,i)=>p.id=i+1);
+  return res;
+}
+
+/**
+ * Óptima: tries all base patterns + both orientations, returns highest count.
+ * Secondary criterion: highest coverage area (in case of tie).
+ */
+function fillOptima(PW, PH, W, H) {
+  const candidates=[
+    fillGrid(PW,PH,W,H,false),
+    fillGrid(PW,PH,H,W,true),
+    fillEspiga(PW,PH,W,H,false),
+    fillEspiga(PW,PH,H,W,true),
+    fillMixta(PW,PH,W,H),
+    fillColumnas(PW,PH,W,H),
+  ];
+  let best=[];
+  let bestArea=0;
+  for(const c of candidates) {
+    const area=c.reduce((s,p)=>s+p.w*p.h,0);
+    if(c.length>best.length||(c.length===best.length&&area>bestArea)){
+      best=c; bestArea=area;
+    }
+  }
+  best.forEach((p,i)=>p.id=i+1);
+  return best;
+}
+
+const FDEFS=[
+  {id:'lineal',   name:'Lineal centrada',  desc:'Filas · orient. original · centrada',   badge:null},
+  {id:'rotado',   name:'Rotada centrada',  desc:'Filas · girado 90° · centrada',          badge:null},
+  {id:'espiga',   name:'Espiga trabada',   desc:'Brick bond · filas alternas ½ desfase',  badge:'TRABADA'},
+  {id:'mixta',    name:'Mixta trabada',    desc:'Filas alternando orientación · centrada', badge:'TRABADA'},
+  {id:'optima',   name:'★ Óptima',        desc:'Máxima cobertura de todas las opciones',  badge:'MEJOR'},
+];
+
+function computeFm(id) {
+  const PW=S.pallet.w,PH=S.pallet.h,W=S.pkg.w,H=S.pkg.h;
+  switch(id){
+    case 'lineal':   return fillGrid(PW,PH,W,H,false);
+    case 'rotado':   return fillGrid(PW,PH,H,W,true);
+    case 'espiga':   return fillEspiga(PW,PH,W,H,false);
+    case 'mixta':    return fillMixta(PW,PH,W,H);
+    case 'optima':   return fillOptima(PW,PH,W,H);
+  }
+  return [];
+}
+
 function loadFm(id) {
   saveHist();
-  S.pkgs      = computeFm(id);
-  S.nextId    = S.pkgs.length + 1;
-  S.sel       = null;
-  S.activeFm  = id;
+  S.pkgs=computeFm(id);
+  S.nextId=S.pkgs.length+1;
+  S.sel=null; S.activeFm=id; S.blocked=false;
   render();
 }
 
-function buildFormationCards() {
-  const container = document.getElementById('formationsList');
-  container.innerHTML = '';
-  FDEFS.forEach(def => {
-    const card = document.createElement('div');
-    card.className = 'formation-card';
-    card.id = 'fc-' + def.id;
-    card.innerHTML = `
+function buildFmCards() {
+  const container=document.getElementById('formationsList');
+  container.innerHTML='';
+  FDEFS.forEach(def=>{
+    const card=document.createElement('div');
+    card.className='formation-card'; card.id='fc-'+def.id;
+    const badge=def.badge?`<span class="fc-badge">${def.badge}</span>`:'';
+    card.innerHTML=`
       <div class="fc-header">
-        <span class="fc-name">${def.name}</span>
+        <span class="fc-name">${def.name} ${badge}</span>
         <span class="fc-count" id="fcc-${def.id}">—</span>
       </div>
-      <div class="fc-desc" id="fcd-${def.id}">${def.desc}</div>
+      <div class="fc-desc">${def.desc}</div>
       <canvas class="fc-mini" id="fcm-${def.id}" width="192" height="56"></canvas>
     `;
-    card.addEventListener('click', () => loadFm(def.id));
+    card.addEventListener('click',()=>loadFm(def.id));
     container.appendChild(card);
   });
 }
 
-let lastFmKey = '';
-function updateFormationCards() {
-  const key = `${S.pallet.w}_${S.pallet.h}_${S.pkg.w}_${S.pkg.h}`;
-  const palArea = S.pallet.w * S.pallet.h;
-
-  FDEFS.forEach(def => {
-    const card = document.getElementById('fc-' + def.id);
-    if (card) card.classList.toggle('active', S.activeFm === def.id);
+let lastFmKey='';
+function updateFmCards() {
+  FDEFS.forEach(def=>{
+    const card=document.getElementById('fc-'+def.id);
+    if(card) card.classList.toggle('active',S.activeFm===def.id);
   });
-
-  if (key === lastFmKey) return; // skip expensive recompute if config unchanged
-  lastFmKey = key;
-
-  FDEFS.forEach(def => {
-    const pkgs = computeFm(def.id);
-    const area = pkgs.reduce((s,p) => s+p.w*p.h, 0);
-    const eff  = palArea ? (area/palArea*100).toFixed(1) : 0;
-
-    const countEl = document.getElementById('fcc-'+def.id);
-    const descEl  = document.getElementById('fcd-'+def.id);
-    if (countEl) countEl.textContent = pkgs.length + ' paq. · ' + eff + '%';
-    if (descEl)  descEl.textContent  = def.desc;
-
-    const mc = document.getElementById('fcm-'+def.id);
-    if (mc) renderMini(mc, pkgs);
+  const key=`${S.pallet.w}_${S.pallet.h}_${S.pkg.w}_${S.pkg.h}`;
+  if(key===lastFmKey) return;
+  lastFmKey=key;
+  const pArea=S.pallet.w*S.pallet.h;
+  FDEFS.forEach(def=>{
+    const pkgs=computeFm(def.id);
+    const area=pkgs.reduce((s,p)=>s+p.w*p.h,0);
+    const eff=pArea?(area/pArea*100).toFixed(1):0;
+    const el=document.getElementById('fcc-'+def.id);
+    if(el) el.textContent=`${pkgs.length} paq. · ${eff}%`;
+    const mc=document.getElementById('fcm-'+def.id);
+    if(mc) renderMini(mc,pkgs);
   });
 }
 
-function renderMini(mc, pkgs) {
-  const mw=mc.width, mh=mc.height;
+function renderMini(mc,pkgs) {
+  const mw=mc.width,mh=mc.height;
   const c=mc.getContext('2d');
   c.clearRect(0,0,mw,mh);
-
-  const MMARG=3;
-  const s=Math.min((mw-2*MMARG)/S.pallet.w, (mh-2*MMARG)/S.pallet.h);
-  const ox=MMARG;
-  const oy=MMARG+(mh-2*MMARG-S.pallet.h*s)/2;
-  const pw=S.pallet.w*s, ph=S.pallet.h*s;
-
-  // Base
+  const MM=3,s=Math.min((mw-2*MM)/S.pallet.w,(mh-2*MM)/S.pallet.h);
+  const ox=MM,oy=MM+(mh-2*MM-S.pallet.h*s)/2;
+  const pw=S.pallet.w*s,ph=S.pallet.h*s;
   c.fillStyle='#c8a460'; c.fillRect(ox,oy,pw,ph);
-
-  // Packages
-  for (const p of pkgs) {
-    c.fillStyle = p.rotated ? 'rgba(245,166,35,.65)' : 'rgba(78,201,176,.65)';
-    c.fillRect(ox+p.x*s, oy+p.y*s, p.w*s, p.h*s);
-    c.strokeStyle = p.rotated ? '#c97c14' : '#3ab09a';
-    c.lineWidth = .5;
-    c.strokeRect(ox+p.x*s, oy+p.y*s, p.w*s, p.h*s);
+  for(const p of pkgs){
+    c.fillStyle=p.rotated?'rgba(245,166,35,.65)':'rgba(78,201,176,.65)';
+    c.fillRect(ox+p.x*s,oy+p.y*s,p.w*s,p.h*s);
+    c.strokeStyle=p.rotated?'#c97c14':'#3ab09a'; c.lineWidth=.5;
+    c.strokeRect(ox+p.x*s,oy+p.y*s,p.w*s,p.h*s);
   }
-
-  // Border
-  c.strokeStyle='#f5a623'; c.lineWidth=1;
-  c.strokeRect(ox,oy,pw,ph);
+  c.strokeStyle='#f5a623'; c.lineWidth=1; c.strokeRect(ox,oy,pw,ph);
 }
 
-// ═══════════════════════════════════════════════════════
-//  MOUSE EVENTS
-// ═══════════════════════════════════════════════════════
-let mDown=false, mMoved=false;
+// ════════════════════════════════════════════════════════
+//  MOUSE — drag with collision response
+// ════════════════════════════════════════════════════════
+let mDown=false;
 
-CV.addEventListener('mousedown', e => {
+CV.addEventListener('mousedown',e=>{
   const r=CV.getBoundingClientRect();
-  const sx=CW/r.width, sy=CH/r.height;
-  const cx=(e.clientX-r.left)*sx, cy=(e.clientY-r.top)*sy;
-
-  mDown=true; mMoved=false;
-
-  const hit = pkgAt(cx, cy);
-  if (hit) {
+  const scX=CW/r.width,scY=CH/r.height;
+  const cx=(e.clientX-r.left)*scX,cy=(e.clientY-r.top)*scY;
+  mDown=true; S.blocked=false;
+  const hit=pkgAt(cx,cy);
+  if(hit){
     saveHist();
-    S.sel  = hit.id;
-    S.drag = { id:hit.id, startCx:cx, startCy:cy, origX:hit.x, origY:hit.y };
+    S.sel=hit.id;
+    S.drag={id:hit.id,startCx:cx,startCy:cy,origX:hit.x,origY:hit.y};
   } else {
-    S.sel = null;
-    const mm = c2mm(cx, cy);
-    const mx = snap(mm.x), my = snap(mm.y);
-    const { w, h } = S.pkg;
-    if (mx>=0 && my>=0 && mx+w<=S.pallet.w && my+h<=S.pallet.h) {
-      saveHist();
-      const np = { id:S.nextId++, x:mx, y:my, w, h, rotated:false };
-      S.pkgs.push(np);
-      S.sel = np.id;
-      S.drag = { id:np.id, startCx:cx, startCy:cy, origX:mx, origY:my };
-      S.activeFm = null;
+    S.sel=null;
+    const mm=c2mm(cx,cy);
+    const mx=snapV(mm.x),my=snapV(mm.y);
+    const {w,h}=S.pkg;
+    // Only place if inside pallet AND no collision
+    if(mx>=0&&my>=0&&mx+w<=S.pallet.w&&my+h<=S.pallet.h){
+      const test={x:mx,y:my,w,h};
+      if(!hasCollision(test,-1)){
+        saveHist();
+        const np={id:S.nextId++,x:mx,y:my,w,h,rotated:false};
+        S.pkgs.push(np); S.sel=np.id; S.activeFm=null;
+        S.drag={id:np.id,startCx:cx,startCy:cy,origX:mx,origY:my};
+      }
     }
   }
   render();
 });
 
-CV.addEventListener('mousemove', e => {
+CV.addEventListener('mousemove',e=>{
   const r=CV.getBoundingClientRect();
-  const sx=CW/r.width, sy=CH/r.height;
-  const cx=(e.clientX-r.left)*sx, cy=(e.clientY-r.top)*sy;
+  const scX=CW/r.width,scY=CH/r.height;
+  const cx=(e.clientX-r.left)*scX,cy=(e.clientY-r.top)*scY;
 
   // Cursor
-  const hit = pkgAt(cx,cy);
-  CV.style.cursor = hit ? (mDown&&S.drag?'grabbing':'grab') : 'crosshair';
+  const hit=pkgAt(cx,cy);
+  CV.style.cursor=hit?(mDown&&S.drag?'grabbing':'grab'):'crosshair';
 
   // Status
-  const mm = c2mm(cx,cy);
-  const inB = mm.x>=0&&mm.x<=S.pallet.w&&mm.y>=0&&mm.y<=S.pallet.h;
-  document.getElementById('statusBar').textContent = inB
-    ? `X: ${Math.round(mm.x)} mm  ·  Y: ${Math.round(mm.y)} mm  ·  Palé: ${S.pallet.w}×${S.pallet.h} mm  ·  Paquete: ${S.pkg.w}×${S.pkg.h} mm`
-    : 'Fuera del palé';
+  const mm=c2mm(cx,cy);
+  const inB=mm.x>=0&&mm.x<=S.pallet.w&&mm.y>=0&&mm.y<=S.pallet.h;
+  document.getElementById('statusBar').textContent=inB
+    ?`X: ${Math.round(mm.x)} mm  ·  Y: ${Math.round(mm.y)} mm  ·  Palé: ${S.pallet.w}×${S.pallet.h}  ·  Caja: ${S.pkg.w}×${S.pkg.h} mm`
+    :'Fuera del palé';
 
-  if (!mDown || !S.drag) return;
-  mMoved = true;
+  if(!mDown||!S.drag) return;
 
-  const s  = scale();
-  const dx = (cx-S.drag.startCx)/s;
-  const dy = (cy-S.drag.startCy)/s;
-  const p  = S.pkgs.find(p=>p.id===S.drag.id);
-  if (!p) return;
+  const s=scale();
+  const dx=(cx-S.drag.startCx)/s, dy=(cy-S.drag.startCy)/s;
+  const p=S.pkgs.find(p=>p.id===S.drag.id);
+  if(!p) return;
 
-  let nx = snap(S.drag.origX+dx);
-  let ny = snap(S.drag.origY+dy);
-  nx = Math.max(0, Math.min(nx, S.pallet.w-p.w));
-  ny = Math.max(0, Math.min(ny, S.pallet.h-p.h));
-  p.x=nx; p.y=ny;
+  let nx=Math.max(0,Math.min(snapV(S.drag.origX+dx),S.pallet.w-p.w));
+  let ny=Math.max(0,Math.min(snapV(S.drag.origY+dy),S.pallet.h-p.h));
+
+  const full={...p,x:nx,y:ny};
+  if(!hasCollision(full,p.id)){
+    // Full move OK
+    p.x=nx; p.y=ny; S.blocked=false;
+  } else {
+    // Try slide along X only
+    const slideX={...p,x:nx,y:p.y};
+    if(!hasCollision(slideX,p.id)){
+      p.x=nx; S.blocked=false;
+    } else {
+      // Try slide along Y only
+      const slideY={...p,x:p.x,y:ny};
+      if(!hasCollision(slideY,p.id)){
+        p.y=ny; S.blocked=false;
+      } else {
+        S.blocked=true; // fully blocked → stay, show red
+      }
+    }
+  }
   render();
 });
 
-CV.addEventListener('mouseup', () => { mDown=false; S.drag=null; });
-CV.addEventListener('mouseleave', () => {
-  mDown=false; S.drag=null;
-  document.getElementById('statusBar').textContent = 'Clic sobre el palé para añadir paquetes · Arrastra para mover';
+CV.addEventListener('mouseup',()=>{ mDown=false; S.drag=null; S.blocked=false; render(); });
+CV.addEventListener('mouseleave',()=>{
+  mDown=false; S.drag=null; S.blocked=false;
+  document.getElementById('statusBar').textContent='Clic sobre el palé para añadir · Arrastra para mover (sin solapamiento)';
+  render();
 });
 
-CV.addEventListener('dblclick', e => {
+CV.addEventListener('dblclick',e=>{
   const r=CV.getBoundingClientRect();
-  const sx=CW/r.width, sy=CH/r.height;
-  const cx=(e.clientX-r.left)*sx, cy=(e.clientY-r.top)*sy;
+  const scX=CW/r.width,scY=CH/r.height;
+  const cx=(e.clientX-r.left)*scX,cy=(e.clientY-r.top)*scY;
   const hit=pkgAt(cx,cy);
-  if (hit) { S.sel=hit.id; rotateSelected(); }
+  if(hit){S.sel=hit.id;rotateSelected();}
 });
 
-// Touch support (mobile)
-CV.addEventListener('touchstart', e => {
-  e.preventDefault();
-  const t=e.touches[0];
-  CV.dispatchEvent(new MouseEvent('mousedown',{clientX:t.clientX,clientY:t.clientY}));
-},{passive:false});
-CV.addEventListener('touchmove', e => {
-  e.preventDefault();
-  const t=e.touches[0];
-  CV.dispatchEvent(new MouseEvent('mousemove',{clientX:t.clientX,clientY:t.clientY}));
-},{passive:false});
-CV.addEventListener('touchend', e => {
-  e.preventDefault();
-  CV.dispatchEvent(new MouseEvent('mouseup',{}));
-},{passive:false});
+// Touch support
+CV.addEventListener('touchstart',e=>{e.preventDefault();const t=e.touches[0];
+  CV.dispatchEvent(new MouseEvent('mousedown',{clientX:t.clientX,clientY:t.clientY}));},{passive:false});
+CV.addEventListener('touchmove',e=>{e.preventDefault();const t=e.touches[0];
+  CV.dispatchEvent(new MouseEvent('mousemove',{clientX:t.clientX,clientY:t.clientY}));},{passive:false});
+CV.addEventListener('touchend',e=>{e.preventDefault();
+  CV.dispatchEvent(new MouseEvent('mouseup',{}));},{passive:false});
 
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
 //  KEYBOARD
-// ═══════════════════════════════════════════════════════
-document.addEventListener('keydown', e => {
-  if (['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
-  if (e.key==='r'||e.key==='R')                       { e.preventDefault(); rotateSelected(); }
-  if (e.key==='Delete'||e.key==='Backspace')           { e.preventDefault(); deleteSelected(); }
-  if (e.key==='Escape')                                { S.sel=null; render(); }
-  if ((e.ctrlKey||e.metaKey)&&e.key==='z')            { e.preventDefault(); undo(); }
-  if ((e.ctrlKey||e.metaKey)&&e.key==='d')            { e.preventDefault(); duplicateSelected(); }
+// ════════════════════════════════════════════════════════
+document.addEventListener('keydown',e=>{
+  if(['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
+  if(e.key==='r'||e.key==='R'){e.preventDefault();rotateSelected();}
+  if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();deleteSelected();}
+  if(e.key==='Escape'){S.sel=null;render();}
+  if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();undo();}
+  if((e.ctrlKey||e.metaKey)&&e.key==='d'){e.preventDefault();duplicateSelected();}
 });
 
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
 //  PACKAGE ACTIONS
-// ═══════════════════════════════════════════════════════
-function rotateSelected() {
-  const p=S.pkgs.find(p=>p.id===S.sel); if(!p) return;
+// ════════════════════════════════════════════════════════
+function rotateSelected(){
+  const p=S.pkgs.find(p=>p.id===S.sel);if(!p) return;
+  const nw=p.h,nh=p.w;
+  const nx=Math.min(p.x,S.pallet.w-nw),ny=Math.min(p.y,S.pallet.h-nh);
+  if(nx<0||ny<0) return;
+  const test={x:nx,y:ny,w:nw,h:nh};
+  if(hasCollision(test,p.id)) return; // can't rotate here, would collide
   saveHist();
-  const nw=p.h, nh=p.w;
-  const nx=Math.min(p.x, S.pallet.w-nw);
-  const ny=Math.min(p.y, S.pallet.h-nh);
-  if (nx>=0&&ny>=0) { p.w=nw;p.h=nh;p.x=nx;p.y=ny;p.rotated=!p.rotated; render(); }
-}
-
-function deleteSelected() {
-  if (!S.sel) return;
-  saveHist();
-  S.pkgs = S.pkgs.filter(p=>p.id!==S.sel);
-  S.sel  = null; S.activeFm = null;
+  p.w=nw;p.h=nh;p.x=nx;p.y=ny;p.rotated=!p.rotated;
   render();
 }
 
-function duplicateSelected() {
-  const p=S.pkgs.find(p=>p.id===S.sel); if(!p) return;
+function deleteSelected(){
+  if(!S.sel) return;
   saveHist();
-  // Try right, then below
-  const candidates = [{x:p.x+p.w,y:p.y},{x:p.x,y:p.y+p.h},{x:p.x+p.w,y:p.y+p.h}];
-  for (const c of candidates) {
-    if (c.x+p.w<=S.pallet.w && c.y+p.h<=S.pallet.h) {
+  S.pkgs=S.pkgs.filter(p=>p.id!==S.sel);
+  S.sel=null;S.activeFm=null;render();
+}
+
+function duplicateSelected(){
+  const p=S.pkgs.find(p=>p.id===S.sel);if(!p) return;
+  const candidates=[{x:p.x+p.w,y:p.y},{x:p.x,y:p.y+p.h},{x:p.x-p.w,y:p.y},{x:p.x,y:p.y-p.h}];
+  for(const c of candidates){
+    if(c.x<0||c.y<0||c.x+p.w>S.pallet.w||c.y+p.h>S.pallet.h) continue;
+    const test={x:c.x,y:c.y,w:p.w,h:p.h};
+    if(!hasCollision(test,-1)){
+      saveHist();
       const np={...p,id:S.nextId++,x:c.x,y:c.y};
-      S.pkgs.push(np); S.sel=np.id; S.activeFm=null;
-      render(); return;
+      S.pkgs.push(np);S.sel=np.id;S.activeFm=null;render();return;
     }
   }
 }
 
-function clearAll() {
-  if (S.pkgs.length===0) return;
-  saveHist();
-  S.pkgs=[]; S.sel=null; S.activeFm=null;
-  render();
+function clearAll(){
+  if(!S.pkgs.length) return;
+  saveHist();S.pkgs=[];S.sel=null;S.activeFm=null;render();
 }
 
-function setPallet(w, h) {
+function setPallet(w,h){
   S.pallet={w,h};
   document.getElementById('palletW').value=w;
   document.getElementById('palletH').value=h;
-  S.pkgs=[]; S.sel=null; S.activeFm=null;
-  lastFmKey='';
-  render();
+  S.pkgs=[];S.sel=null;S.activeFm=null;lastFmKey='';render();
 }
 
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
 //  UNDO
-// ═══════════════════════════════════════════════════════
-function saveHist() {
+// ════════════════════════════════════════════════════════
+function saveHist(){
   S.history.push(JSON.parse(JSON.stringify(S.pkgs)));
-  if (S.history.length>40) S.history.shift();
+  if(S.history.length>40) S.history.shift();
 }
-function undo() {
-  if (!S.history.length) return;
-  S.pkgs=S.history.pop(); S.sel=null;
-  render();
-}
-
-// ═══════════════════════════════════════════════════════
-//  INPUT BINDINGS
-// ═══════════════════════════════════════════════════════
-function readCfg() {
-  S.pallet.w  = +document.getElementById('palletW').value  || 1200;
-  S.pallet.h  = +document.getElementById('palletH').value  || 800;
-  S.pkg.w     = +document.getElementById('pkgW').value     || 300;
-  S.pkg.h     = +document.getElementById('pkgH').value     || 200;
-  S.pkg.z     = +document.getElementById('pkgZ').value     || 150;
-  S.pkg.kg    = +document.getElementById('pkgWeight').value || 15;
-  S.snap      = document.getElementById('snapToggle').checked;
-  S.snapSz    = +document.getElementById('snapSize').value  || 10;
+function undo(){
+  if(!S.history.length) return;
+  S.pkgs=S.history.pop();S.sel=null;render();
 }
 
-['palletW','palletH','pkgW','pkgH','pkgZ','pkgWeight','snapSize'].forEach(id => {
-  const el = document.getElementById(id);
-  el.addEventListener('change', () => { readCfg(); S.pkgs=[]; S.sel=null; S.activeFm=null; lastFmKey=''; render(); });
-  el.addEventListener('input',  () => { readCfg(); render(); });
+// ════════════════════════════════════════════════════════
+//  CONFIG INPUTS
+// ════════════════════════════════════════════════════════
+function readCfg(){
+  S.pallet.w=+document.getElementById('palletW').value||1200;
+  S.pallet.h=+document.getElementById('palletH').value||800;
+  S.pkg.w=+document.getElementById('pkgW').value||300;
+  S.pkg.h=+document.getElementById('pkgH').value||200;
+  S.pkg.z=+document.getElementById('pkgZ').value||150;
+  S.pkg.kg=+document.getElementById('pkgWeight').value||15;
+  S.snap=document.getElementById('snapToggle').checked;
+  S.snapSz=+document.getElementById('snapSize').value||10;
+}
+
+['palletW','palletH','pkgW','pkgH','pkgZ','pkgWeight','snapSize'].forEach(id=>{
+  const el=document.getElementById(id);
+  el.addEventListener('change',()=>{readCfg();S.pkgs=[];S.sel=null;S.activeFm=null;lastFmKey='';render();});
+  el.addEventListener('input', ()=>{readCfg();render();});
 });
-document.getElementById('snapToggle').addEventListener('change', () => { readCfg(); render(); });
+document.getElementById('snapToggle').addEventListener('change',()=>{readCfg();render();});
 
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
 //  INIT
-// ═══════════════════════════════════════════════════════
-buildFormationCards();
+// ════════════════════════════════════════════════════════
+buildFmCards();
 render();
 </script>
 </body>
