@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PaletForma — Distribución de Paquetes</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
 <style>
 :root {
   --bg:#09182a; --surface:#0f2340; --surface2:#152c50; --border:#1c3a68;
@@ -65,6 +66,7 @@ header{background:var(--surface);border-bottom:2px solid var(--border);padding:1
 .stat-value.ok{color:var(--ok);}
 .stat-value.warn{color:var(--danger);}
 .stat-value.neutral{color:var(--muted);font-size:12px;}
+.stat-value.sm{font-size:13px;}
 
 .formation-card{border:1px solid var(--border);border-radius:var(--r);padding:8px;
   margin-bottom:8px;cursor:pointer;transition:all .15s;}
@@ -78,28 +80,58 @@ header{background:var(--surface);border-bottom:2px solid var(--border);padding:1
   padding:1px 5px;border-radius:3px;border:1px solid rgba(78,201,176,.3);}
 .fc-mini{width:100%;height:56px;display:block;background:var(--bg);border-radius:3px;}
 
-.legend{display:flex;gap:14px;justify-content:center;margin-top:8px;flex-shrink:0;}
+.legend{display:flex;gap:14px;justify-content:center;margin-top:8px;flex-shrink:0;flex-wrap:wrap;}
 .legend-item{display:flex;align-items:center;gap:5px;font-size:9px;color:var(--muted);}
 .legend-box{width:14px;height:10px;border-radius:2px;}
 
-.canvas-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:16px;gap:0;min-width:0;position:relative;}
-#paletCanvas{border:1px solid var(--border);border-radius:var(--r);cursor:crosshair;
-  background:#07111e;display:block;max-width:100%;}
+.canvas-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  padding:12px;gap:8px;min-width:0;position:relative;}
 
-.status-bar{margin-top:8px;flex-shrink:0;font-size:10px;color:var(--muted);
-  background:var(--surface);padding:4px 16px;border-radius:12px;border:1px solid var(--border);
+/* View tabs */
+.view-tabs{display:flex;gap:0;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:3px;flex-shrink:0;}
+.view-tab{padding:6px 18px;font-family:var(--mono);font-size:12px;background:transparent;
+  border:none;color:var(--muted);cursor:pointer;border-radius:4px;letter-spacing:1px;transition:all .15s;}
+.view-tab.active{background:var(--surface2);color:var(--accent);box-shadow:0 0 0 1px var(--border);}
+.view-tab:hover:not(.active){color:var(--text);}
+
+/* Layer controls */
+.layer-bar{display:flex;align-items:center;gap:10px;background:var(--surface);
+  border:1px solid var(--border);border-radius:var(--r);padding:6px 12px;flex-shrink:0;font-size:11px;}
+.layer-bar.hidden{display:none;}
+.layer-label{color:var(--muted);font-size:10px;letter-spacing:1px;}
+.layer-pills{display:flex;gap:0;border:1px solid var(--border);border-radius:4px;overflow:hidden;}
+.layer-pill{padding:4px 12px;background:var(--surface2);border:none;color:var(--muted);
+  cursor:pointer;font-family:var(--mono);font-size:11px;transition:all .15s;}
+.layer-pill.active{background:var(--accent);color:var(--bg);font-weight:bold;}
+.layer-pill.active.even{background:var(--teal);}
+.layer-action{padding:4px 10px;background:var(--surface2);border:1px solid var(--border);
+  color:var(--muted);font-family:var(--mono);font-size:10px;cursor:pointer;border-radius:4px;
+  transition:all .15s;}
+.layer-action:hover{border-color:var(--accent);color:var(--accent);}
+
+.canvas-wrap{position:relative;flex:1;display:flex;align-items:center;justify-content:center;width:100%;min-height:0;}
+#paletCanvas,#canvas3d{border:1px solid var(--border);border-radius:var(--r);background:#07111e;display:block;}
+#paletCanvas{cursor:crosshair;max-width:100%;max-height:100%;}
+#canvas3d{cursor:grab;width:680px;height:500px;max-width:100%;max-height:100%;}
+#canvas3d.dragging{cursor:grabbing;}
+.mode-2d #canvas3d{display:none;}
+.mode-3d #paletCanvas{display:none;}
+.mode-3d .legend{display:none;}
+
+.status-bar{flex-shrink:0;font-size:10px;color:var(--muted);background:var(--surface);
+  padding:4px 16px;border-radius:12px;border:1px solid var(--border);
   letter-spacing:.5px;white-space:nowrap;}
 
 .shortcut-list{font-size:10px;color:var(--muted);line-height:2.2;}
 .shortcut-list b{color:var(--text);}
 </style>
 </head>
-<body>
+<body class="mode-2d">
 
 <header>
   <div class="logo">PALET<span>FORMA</span></div>
-  <div class="tagline">Distribución de paquetes en palés &mdash; Vista superior</div>
+  <div class="tagline">Distribución de paquetes en palés &mdash; 2D · 3D · multi-capa</div>
 </header>
 
 <div class="app">
@@ -114,6 +146,9 @@ header{background:var(--surface);border-bottom:2px solid var(--border);padding:1
         <div class="field"><label>ANCHO <span class="unit">mm</span></label>
           <input type="number" id="palletH" value="800" min="100" max="4000" step="10"></div>
       </div>
+      <div class="field"><label>MARGEN DE BORDE <span class="unit">mm</span></label>
+        <input type="number" id="margin" value="0" min="0" max="300" step="5"
+          title="Distancia mínima entre la carga y el borde del palé"></div>
       <div style="font-size:10px;color:var(--muted);margin-bottom:3px;">Presets</div>
       <div class="preset-row">
         <button class="preset-btn" onclick="setPallet(1200,800)">EUR<br>1200×800</button>
@@ -136,6 +171,9 @@ header{background:var(--surface);border-bottom:2px solid var(--border);padding:1
         <div class="field"><label>PESO <span class="unit">kg</span></label>
           <input type="number" id="pkgWeight" value="15" min="0.1" max="500" step="0.5"></div>
       </div>
+      <div class="field"><label>ALTURAS / PLANOS</label>
+        <input type="number" id="numLayers" value="1" min="1" max="50" step="1"
+          title="Número de capas apiladas en altura"></div>
     </div>
 
     <div>
@@ -155,7 +193,7 @@ header{background:var(--surface);border-bottom:2px solid var(--border);padding:1
         <button class="btn btn-teal" onclick="duplicateSelected()">⧉ Duplic.</button>
       </div>
       <button class="btn btn-danger" onclick="deleteSelected()">🗑 Borrar seleccionado</button>
-      <button class="btn btn-danger" onclick="clearAll()">🧹 Limpiar todo</button>
+      <button class="btn btn-danger" onclick="clearLayer()">🧹 Limpiar capa actual</button>
     </div>
 
     <div>
@@ -168,14 +206,35 @@ header{background:var(--surface);border-bottom:2px solid var(--border);padding:1
         <b>Esc</b> — Deseleccionar<br>
         <b>Clic vacío</b> — Añadir paquete<br>
         <b>Doble clic</b> — Rotar paquete<br>
-        <b>Arrastrar</b> — Mover (sin solapamiento)
+        <b>Arrastrar</b> — Mover (sin solapamiento)<br>
+        <b>En 3D:</b> arrastra para girar · rueda para zoom
       </div>
     </div>
   </div>
 
   <!-- CENTER CANVAS -->
   <div class="canvas-area">
-    <canvas id="paletCanvas" width="680" height="500"></canvas>
+
+    <div class="view-tabs">
+      <button class="view-tab active" id="tab2d" onclick="setView('2d')">📐 VISTA 2D</button>
+      <button class="view-tab" id="tab3d" onclick="setView('3d')">📦 VISTA 3D</button>
+    </div>
+
+    <div class="layer-bar" id="layerBar">
+      <span class="layer-label">EDITANDO CAPA:</span>
+      <div class="layer-pills">
+        <button class="layer-pill active" id="pillOdd" onclick="setEditLayer('odd')">IMPAR (1,3,5…)</button>
+        <button class="layer-pill" id="pillEven" onclick="setEditLayer('even')">PAR (2,4,6…)</button>
+      </div>
+      <button class="layer-action" onclick="copyLayer()" title="Copia la capa actual a la otra">⇄ Copiar →</button>
+      <button class="layer-action" onclick="mirrorLayer()" title="Rota 180° la capa actual (trabado clásico)">↻ Espejo 180°</button>
+    </div>
+
+    <div class="canvas-wrap">
+      <canvas id="paletCanvas" width="680" height="500"></canvas>
+      <canvas id="canvas3d" width="680" height="500"></canvas>
+    </div>
+
     <div class="legend">
       <div class="legend-item">
         <div class="legend-box" style="background:rgba(78,201,176,.6);border:1px solid #4ec9b0;"></div>
@@ -190,11 +249,11 @@ header{background:var(--surface);border-bottom:2px solid var(--border);padding:1
         Seleccionado
       </div>
       <div class="legend-item">
-        <div class="legend-box" style="background:rgba(224,82,82,.4);border:1px solid #e05252;"></div>
-        Colisión bloqueada
+        <div class="legend-box" style="background:rgba(220,80,40,.2);border:1px dashed rgba(240,100,50,.8);"></div>
+        Zona de margen
       </div>
     </div>
-    <div class="status-bar" id="statusBar">Clic sobre el palé para añadir · Arrastra para mover (sin solapamiento)</div>
+    <div class="status-bar" id="statusBar">Clic sobre el palé para añadir · Arrastra para mover</div>
   </div>
 
   <!-- RIGHT SIDEBAR -->
@@ -203,25 +262,33 @@ header{background:var(--surface);border-bottom:2px solid var(--border);padding:1
       <div class="sec-title">📊 Estadísticas</div>
       <div class="stat-block">
         <div class="stat-row">
-          <span class="stat-label">Paquetes</span>
-          <span class="stat-value" id="statCount">0</span>
+          <span class="stat-label">Paq/capa actual</span>
+          <span class="stat-value sm" id="statCount">0</span>
         </div>
         <div class="stat-row">
-          <span class="stat-label">Cobertura</span>
-          <span class="stat-value" id="statCov">0%</span>
+          <span class="stat-label">Cobertura capa</span>
+          <span class="stat-value sm" id="statCov">0%</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Total apilado</span>
+          <span class="stat-value" id="statTotal">0</span>
         </div>
         <div class="stat-row">
           <span class="stat-label">Peso total</span>
-          <span class="stat-value" id="statWeight">0 kg</span>
+          <span class="stat-value sm" id="statWeight">0 kg</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Altura total</span>
+          <span class="stat-value sm" id="statHeight">0 mm</span>
         </div>
         <div class="stat-row">
           <span class="stat-label">Estado</span>
-          <span class="stat-value neutral" id="statState">—</span>
+          <span class="stat-value neutral sm" id="statState">—</span>
         </div>
       </div>
     </div>
     <div>
-      <div class="sec-title">✨ Auto-generador</div>
+      <div class="sec-title">✨ Auto-generador <span style="color:var(--muted);font-weight:normal;text-transform:none;letter-spacing:0;font-size:9px;">(aplica a capa actual)</span></div>
       <div id="formationsList"></div>
     </div>
   </div>
@@ -232,21 +299,28 @@ header{background:var(--surface);border-bottom:2px solid var(--border);padding:1
 //  STATE
 // ════════════════════════════════════════════════════════
 const S = {
-  pallet: { w:1200, h:800 },
-  pkg:    { w:300, h:200, z:150, kg:15 },
-  pkgs:   [],
-  sel:    null,
-  drag:   null,
-  nextId: 1,
-  history:[],
-  snap:   true,
-  snapSz: 10,
-  activeFm: null,
-  blocked: false,   // visual feedback for collision
+  pallet:    { w:1200, h:800 },
+  pkg:       { w:300, h:200, z:150, kg:15 },
+  layers:    { odd:[], even:[] },
+  editLayer: 'odd',
+  numLayers: 1,
+  sel:       null,
+  drag:      null,
+  nextId:    1,
+  history:   [],
+  snap:      true,
+  snapSz:    10,
+  margin:    0,
+  activeFm:  { odd:null, even:null },
+  blocked:   false,
+  view:      '2d',
+  justAdded: null,   // {id, ts} — used to suppress rotate on double-tap-to-add
 };
+function L(){ return S.layers[S.editLayer]; }
+function setL(arr){ S.layers[S.editLayer]=arr; }
 
 // ════════════════════════════════════════════════════════
-//  CANVAS
+//  2D CANVAS
 // ════════════════════════════════════════════════════════
 const CV  = document.getElementById('paletCanvas');
 const ctx = CV.getContext('2d');
@@ -261,30 +335,25 @@ function snapV(v) { return S.snap ? Math.round(v/S.snapSz)*S.snapSz : v; }
 function c2mm(cx,cy) { const s=scale(),o=origin(); return {x:(cx-o.x)/s, y:(cy-o.y)/s}; }
 function pkgAt(cx,cy) {
   const m=c2mm(cx,cy);
-  for (let i=S.pkgs.length-1;i>=0;i--) {
-    const p=S.pkgs[i];
+  const arr=L();
+  for (let i=arr.length-1;i>=0;i--) {
+    const p=arr[i];
     if (m.x>=p.x&&m.x<=p.x+p.w&&m.y>=p.y&&m.y<=p.y+p.h) return p;
   }
   return null;
 }
 
-// ════════════════════════════════════════════════════════
-//  COLLISION DETECTION
-//  eps=0.5mm: packages can touch (share edge) but not overlap
-// ════════════════════════════════════════════════════════
 const EPS = 0.5;
 function overlaps(a, b) {
   return !(a.x+a.w <= b.x+EPS || b.x+b.w <= a.x+EPS ||
            a.y+a.h <= b.y+EPS || b.y+b.h <= a.y+EPS);
 }
 function hasCollision(pkg, excludeId) {
-  return S.pkgs.some(p => p.id !== excludeId && overlaps(pkg, p));
+  return L().some(p => p.id !== excludeId && overlaps(pkg, p));
 }
 
-// ════════════════════════════════════════════════════════
-//  RENDER
-// ════════════════════════════════════════════════════════
 function render() {
+  if(S.view==='3d') return render3D();
   ctx.clearRect(0,0,CW,CH);
   const s=scale(), o=origin(), pw=S.pallet.w*s, ph=S.pallet.h*s;
   ctx.save(); ctx.translate(o.x,o.y);
@@ -300,30 +369,48 @@ function render() {
     ctx.beginPath(); ctx.moveTo(0,y*s); ctx.lineTo(pw,y*s); ctx.stroke();
   }
 
-  // Grid (100mm)
+  // Margin overlay
+  if(S.margin>0){
+    const ms=S.margin*s;
+    ctx.fillStyle='rgba(220,80,40,.10)';
+    ctx.fillRect(0,0,pw,ms);
+    ctx.fillRect(0,ph-ms,pw,ms);
+    ctx.fillRect(0,ms,ms,ph-2*ms);
+    ctx.fillRect(pw-ms,ms,ms,ph-2*ms);
+    ctx.strokeStyle='rgba(240,100,50,.75)'; ctx.lineWidth=1.2; ctx.setLineDash([5,4]);
+    ctx.strokeRect(ms,ms,pw-2*ms,ph-2*ms); ctx.setLineDash([]);
+    ctx.fillStyle='rgba(240,110,60,.85)'; ctx.font='9px Courier New';
+    ctx.textAlign='left'; ctx.textBaseline='top';
+    ctx.fillText(`± ${S.margin} mm`, ms+4, ms+3);
+  }
+
+  // Grid
   ctx.strokeStyle='rgba(70,120,200,.18)'; ctx.lineWidth=.6; ctx.setLineDash([3,6]);
   for (let x=100;x<S.pallet.w;x+=100) { ctx.beginPath(); ctx.moveTo(x*s,0); ctx.lineTo(x*s,ph); ctx.stroke(); }
   for (let y=100;y<S.pallet.h;y+=100) { ctx.beginPath(); ctx.moveTo(0,y*s); ctx.lineTo(pw,y*s); ctx.stroke(); }
   ctx.setLineDash([]);
 
-  // Packages
-  for (const p of S.pkgs) drawPkg(ctx, p, s, p.id===S.sel);
+  // Packages of current layer
+  for (const p of L()) drawPkg(ctx, p, s, p.id===S.sel);
 
   // Pallet border
   ctx.strokeStyle='#f5a623'; ctx.lineWidth=2.5; ctx.strokeRect(0,0,pw,ph);
 
-  // Corner ticks
   const T=8; ctx.lineWidth=1.5;
   [[0,0],[pw,0],[0,ph],[pw,ph]].forEach(([cx2,cy2]) => {
     const sx=cx2===0?1:-1, sy=cy2===0?1:-1;
     ctx.beginPath(); ctx.moveTo(cx2+sx*T,cy2); ctx.lineTo(cx2,cy2); ctx.lineTo(cx2,cy2+sy*T); ctx.stroke();
   });
 
-  // Dimension labels
   ctx.fillStyle='#f5a623'; ctx.font='10px Courier New'; ctx.textAlign='center'; ctx.textBaseline='top';
   ctx.fillText(`${S.pallet.w} mm`, pw/2, ph+10);
   ctx.save(); ctx.rotate(-Math.PI/2); ctx.textBaseline='bottom';
   ctx.fillText(`${S.pallet.h} mm`, -ph/2, -10); ctx.restore();
+
+  // Layer indicator
+  ctx.fillStyle=S.editLayer==='odd' ? 'rgba(245,166,35,.9)' : 'rgba(78,201,176,.9)';
+  ctx.font='bold 11px Courier New'; ctx.textAlign='left'; ctx.textBaseline='top';
+  ctx.fillText(`CAPA ${S.editLayer==='odd'?'IMPAR':'PAR'}`, 5, 5);
 
   ctx.restore();
   updateStats();
@@ -332,38 +419,26 @@ function render() {
 
 function drawPkg(c, p, s, isSel) {
   const px=p.x*s, py=p.y*s, pw=p.w*s, ph=p.h*s;
-
-  // Collision flash
   if (isSel && S.blocked) {
     c.fillStyle='rgba(224,82,82,.15)'; c.fillRect(px-2,py-2,pw+4,ph+4);
   }
-
-  // Shadow
   c.fillStyle='rgba(0,0,0,.22)'; c.fillRect(px+2,py+2,pw,ph);
-
-  // Fill
-  if (isSel)        c.fillStyle='rgba(245,166,35,.85)';
+  if (isSel)         c.fillStyle='rgba(245,166,35,.85)';
   else if(p.rotated) c.fillStyle='rgba(245,166,35,.52)';
   else               c.fillStyle='rgba(78,201,176,.52)';
   c.fillRect(px,py,pw,ph);
-
-  // Cross mark
   if (pw>22&&ph>18) {
     c.strokeStyle=isSel?'rgba(120,70,0,.4)':(p.rotated?'rgba(180,110,10,.35)':'rgba(30,130,110,.35)');
     c.lineWidth=.7;
     c.beginPath(); c.moveTo(px,py); c.lineTo(px+pw,py+ph);
     c.moveTo(px+pw,py); c.lineTo(px,py+ph); c.stroke();
   }
-
-  // Border
   if (isSel) {
     c.strokeStyle=S.blocked?'#e05252':'#f5a623'; c.lineWidth=2.5; c.setLineDash([5,3]);
   } else {
     c.strokeStyle=p.rotated?'#c97c14':'#3ab09a'; c.lineWidth=1.5; c.setLineDash([]);
   }
   c.strokeRect(px,py,pw,ph); c.setLineDash([]);
-
-  // Label
   if (pw>32&&ph>22) {
     c.fillStyle=isSel?'#2a0e00':'#071a14';
     c.font=`bold ${Math.min(11,Math.max(7,pw/8))}px Courier New`;
@@ -376,30 +451,41 @@ function drawPkg(c, p, s, isSel) {
 //  STATS
 // ════════════════════════════════════════════════════════
 function updateStats() {
-  const n=S.pkgs.length;
-  const area=S.pkgs.reduce((a,p)=>a+p.w*p.h,0);
+  const arr=L();
+  const n=arr.length;
+  const area=arr.reduce((a,p)=>a+p.w*p.h,0);
   const pArea=S.pallet.w*S.pallet.h;
   const cov=pArea?(area/pArea*100).toFixed(1):0;
-  const weight=(n*S.pkg.kg).toFixed(1);
+
+  // Total stacked packages across layers
+  let total=0;
+  for(let i=0;i<S.numLayers;i++){
+    const isOdd=(i%2===0);
+    const layerArr = isOdd ? S.layers.odd : (S.layers.even.length?S.layers.even:S.layers.odd);
+    total += layerArr.length;
+  }
+  const weight=(total*S.pkg.kg).toFixed(1);
+  const height=S.numLayers*S.pkg.z;
+
   document.getElementById('statCount').textContent=n;
   document.getElementById('statCov').textContent=cov+'%';
+  document.getElementById('statTotal').textContent=total;
   document.getElementById('statWeight').textContent=weight+' kg';
+  document.getElementById('statHeight').textContent=height+' mm';
+
   let ol=false;
-  outer:for(let i=0;i<S.pkgs.length;i++)
-    for(let j=i+1;j<S.pkgs.length;j++)
-      if(overlaps(S.pkgs[i],S.pkgs[j])){ol=true;break outer;}
+  outer:for(let i=0;i<arr.length;i++)
+    for(let j=i+1;j<arr.length;j++)
+      if(overlaps(arr[i],arr[j])){ol=true;break outer;}
   const el=document.getElementById('statState');
-  if(n===0){el.textContent='—';el.className='stat-value neutral';}
-  else if(ol){el.textContent='⚠ Solapamiento';el.className='stat-value warn';}
-  else{el.textContent='✓ Correcto';el.className='stat-value ok';}
+  if(n===0){el.textContent='—';el.className='stat-value neutral sm';}
+  else if(ol){el.textContent='⚠ Solapamiento';el.className='stat-value warn sm';}
+  else{el.textContent='✓ Correcto';el.className='stat-value ok sm';}
 }
 
 // ════════════════════════════════════════════════════════
-//  FORMATION ALGORITHMS
-//  All center the arrangement on the pallet.
+//  FORMATIONS
 // ════════════════════════════════════════════════════════
-
-/** Simple grid, centered */
 function fillGrid(PW, PH, pkgW, pkgH, rotated) {
   const cols=Math.floor(PW/pkgW), rows=Math.floor(PH/pkgH);
   if (!cols||!rows) return [];
@@ -411,27 +497,17 @@ function fillGrid(PW, PH, pkgW, pkgH, rotated) {
   return R;
 }
 
-/**
- * Espiga (trabado): brick bond, centered.
- * Even rows: normal start. Odd rows: offset W/2.
- * The bounding box of even+odd is used to center the whole pattern.
- */
 function fillEspiga(PW, PH, pkgW, pkgH, rotated) {
   const rows=Math.floor(PH/pkgH);
   if (!rows) return [];
   const evenCols=Math.floor(PW/pkgW);
   if (!evenCols) return [];
-
-  // How many packages fit in odd rows (offset by pkgW/2)?
   const oddCols=Math.floor((PW-pkgW/2)/pkgW);
-
-  // Bounding box width of the whole pattern
   const evenWidth=evenCols*pkgW;
   const oddWidth=oddCols>0 ? pkgW/2+oddCols*pkgW : 0;
   const bboxW=Math.max(evenWidth,oddWidth);
   const leftMargin=(PW-bboxW)/2;
   const topMargin=(PH-rows*pkgH)/2;
-
   const R=[]; let id=1;
   for(let r=0;r<rows;r++) {
     const odd=r%2===1;
@@ -443,12 +519,6 @@ function fillEspiga(PW, PH, pkgW, pkgH, rotated) {
   return R;
 }
 
-/**
- * Mixta trabada: alternate rows between two orientations.
- * Tries both starting orientations, picks the one with more packages.
- * Rows are individually centered, whole stack centered vertically.
- * "Trabado" because different orientations make joints non-continuous.
- */
 function fillMixta(PW, PH, W, H) {
   function build(startRot) {
     const rows=[];
@@ -478,10 +548,6 @@ function fillMixta(PW, PH, W, H) {
   return res;
 }
 
-/**
- * Columnas trabadas: alternate columns between orientations.
- * Centered.
- */
 function fillColumnas(PW, PH, W, H) {
   function build(startRot) {
     const cols=[];
@@ -510,10 +576,6 @@ function fillColumnas(PW, PH, W, H) {
   return res;
 }
 
-/**
- * Óptima: tries all base patterns + both orientations, returns highest count.
- * Secondary criterion: highest coverage area (in case of tie).
- */
 function fillOptima(PW, PH, W, H) {
   const candidates=[
     fillGrid(PW,PH,W,H,false),
@@ -536,30 +598,37 @@ function fillOptima(PW, PH, W, H) {
 }
 
 const FDEFS=[
-  {id:'lineal',   name:'Lineal centrada',  desc:'Filas · orient. original · centrada',   badge:null},
-  {id:'rotado',   name:'Rotada centrada',  desc:'Filas · girado 90° · centrada',          badge:null},
-  {id:'espiga',   name:'Espiga trabada',   desc:'Brick bond · filas alternas ½ desfase',  badge:'TRABADA'},
-  {id:'mixta',    name:'Mixta trabada',    desc:'Filas alternando orientación · centrada', badge:'TRABADA'},
-  {id:'optima',   name:'★ Óptima',        desc:'Máxima cobertura de todas las opciones',  badge:'MEJOR'},
+  {id:'lineal',  name:'Lineal centrada',  desc:'Filas · orient. original · centrada',     badge:null},
+  {id:'rotado',  name:'Rotada centrada',  desc:'Filas · girado 90° · centrada',           badge:null},
+  {id:'espiga',  name:'Espiga trabada',   desc:'Brick bond · filas alternas ½ desfase',   badge:'TRABADA'},
+  {id:'mixta',   name:'Mixta trabada',    desc:'Filas alternando orientación · centrada', badge:'TRABADA'},
+  {id:'optima',  name:'★ Óptima',        desc:'Máxima cobertura de todas las opciones',  badge:'MEJOR'},
 ];
 
 function computeFm(id) {
-  const PW=S.pallet.w,PH=S.pallet.h,W=S.pkg.w,H=S.pkg.h;
+  const W=S.pkg.w,H=S.pkg.h,M=S.margin;
+  const EW=S.pallet.w-2*M, EH=S.pallet.h-2*M;
+  if(EW<=0||EH<=0) return [];
+  let pkgs;
   switch(id){
-    case 'lineal':   return fillGrid(PW,PH,W,H,false);
-    case 'rotado':   return fillGrid(PW,PH,H,W,true);
-    case 'espiga':   return fillEspiga(PW,PH,W,H,false);
-    case 'mixta':    return fillMixta(PW,PH,W,H);
-    case 'optima':   return fillOptima(PW,PH,W,H);
+    case 'lineal':  pkgs=fillGrid(EW,EH,W,H,false); break;
+    case 'rotado':  pkgs=fillGrid(EW,EH,H,W,true);  break;
+    case 'espiga':  pkgs=fillEspiga(EW,EH,W,H,false); break;
+    case 'mixta':   pkgs=fillMixta(EW,EH,W,H); break;
+    case 'optima':  pkgs=fillOptima(EW,EH,W,H); break;
+    default: return [];
   }
-  return [];
+  pkgs.forEach(p=>{ p.x+=M; p.y+=M; });
+  return pkgs;
 }
 
 function loadFm(id) {
   saveHist();
-  S.pkgs=computeFm(id);
-  S.nextId=S.pkgs.length+1;
-  S.sel=null; S.activeFm=id; S.blocked=false;
+  setL(computeFm(id));
+  S.nextId=L().length+1;
+  S.sel=null;
+  S.activeFm[S.editLayer]=id;
+  S.blocked=false;
   render();
 }
 
@@ -587,9 +656,9 @@ let lastFmKey='';
 function updateFmCards() {
   FDEFS.forEach(def=>{
     const card=document.getElementById('fc-'+def.id);
-    if(card) card.classList.toggle('active',S.activeFm===def.id);
+    if(card) card.classList.toggle('active',S.activeFm[S.editLayer]===def.id);
   });
-  const key=`${S.pallet.w}_${S.pallet.h}_${S.pkg.w}_${S.pkg.h}`;
+  const key=`${S.pallet.w}_${S.pallet.h}_${S.pkg.w}_${S.pkg.h}_${S.margin}`;
   if(key===lastFmKey) return;
   lastFmKey=key;
   const pArea=S.pallet.w*S.pallet.h;
@@ -622,11 +691,249 @@ function renderMini(mc,pkgs) {
 }
 
 // ════════════════════════════════════════════════════════
-//  MOUSE — drag with collision response
+//  3D VIEW (Three.js)
+// ════════════════════════════════════════════════════════
+let scene3d=null, camera3d=null, renderer3d=null, pkgGroup=null, palletMesh=null;
+const orbit = { theta: -Math.PI*0.7, phi: Math.PI*0.35, radius: 3200 };
+const center3d = new THREE.Vector3();
+
+function init3D() {
+  if (scene3d) return;
+  const canvas=document.getElementById('canvas3d');
+  scene3d=new THREE.Scene();
+  scene3d.background=new THREE.Color(0x07111e);
+  // fog adds depth
+  scene3d.fog=new THREE.Fog(0x07111e, 4000, 14000);
+
+  camera3d=new THREE.PerspectiveCamera(40, canvas.width/canvas.height, 1, 30000);
+  renderer3d=new THREE.WebGLRenderer({canvas, antialias:true});
+  renderer3d.setPixelRatio(window.devicePixelRatio);
+  renderer3d.setSize(canvas.width, canvas.height, false);
+
+  const hemi=new THREE.HemisphereLight(0xffffff, 0x1a2a44, 0.65);
+  scene3d.add(hemi);
+  const dir=new THREE.DirectionalLight(0xffe8c5, 0.9);
+  dir.position.set(1500,3000,1200);
+  scene3d.add(dir);
+  const dir2=new THREE.DirectionalLight(0x6080a0, 0.3);
+  dir2.position.set(-1500,1500,-800);
+  scene3d.add(dir2);
+
+  // Ground grid
+  const grid=new THREE.GridHelper(8000, 16, 0x1c3a68, 0x142850);
+  grid.position.y=0;
+  scene3d.add(grid);
+
+  pkgGroup=new THREE.Group();
+  scene3d.add(pkgGroup);
+
+  setupOrbitControls(canvas);
+}
+
+function clearGroup(g) {
+  while(g.children.length){
+    const c=g.children[0];
+    g.remove(c);
+    if(c.geometry) c.geometry.dispose();
+    if(c.material){
+      if(Array.isArray(c.material)) c.material.forEach(m=>m.dispose());
+      else c.material.dispose();
+    }
+  }
+}
+
+function build3D() {
+  if (!scene3d) init3D();
+  clearGroup(pkgGroup);
+  if (palletMesh){
+    scene3d.remove(palletMesh);
+    palletMesh.geometry.dispose();
+    palletMesh.material.dispose();
+    palletMesh=null;
+  }
+
+  const PW=S.pallet.w, PH=S.pallet.h;
+  const palH=144; // standard pallet thickness in mm
+
+  // Pallet
+  const palGeo=new THREE.BoxGeometry(PW, palH, PH);
+  const palMat=new THREE.MeshStandardMaterial({color:0xb88f4e, roughness:.85, metalness:.05});
+  palletMesh=new THREE.Mesh(palGeo, palMat);
+  palletMesh.position.set(PW/2, palH/2, PH/2);
+  scene3d.add(palletMesh);
+
+  // Pallet edge highlight
+  const palEdges=new THREE.EdgesGeometry(palGeo);
+  const palLine=new THREE.LineSegments(palEdges, new THREE.LineBasicMaterial({color:0x8a5a20}));
+  palLine.position.copy(palletMesh.position);
+  scene3d.add(palLine);
+
+  const pkgZ=S.pkg.z;
+
+  for(let layer=0; layer<S.numLayers; layer++){
+    const isOdd=(layer%2===0);
+    const useEven=(!isOdd) && S.layers.even.length>0;
+    const arr = useEven ? S.layers.even : S.layers.odd;
+    for(const p of arr){
+      const geo=new THREE.BoxGeometry(p.w, pkgZ, p.h);
+      const color = p.rotated ? 0xf5a623 : 0x4ec9b0;
+      const mat=new THREE.MeshStandardMaterial({color, roughness:.55, metalness:.1});
+      const mesh=new THREE.Mesh(geo, mat);
+      mesh.position.set(p.x + p.w/2, palH + layer*pkgZ + pkgZ/2, p.y + p.h/2);
+      pkgGroup.add(mesh);
+
+      // Edge wireframe for clarity
+      const edges=new THREE.EdgesGeometry(geo);
+      const lineMat=new THREE.LineBasicMaterial({color:0x000000, opacity:.35, transparent:true});
+      const line=new THREE.LineSegments(edges, lineMat);
+      line.position.copy(mesh.position);
+      pkgGroup.add(line);
+    }
+  }
+
+  // Auto-frame camera target
+  center3d.set(PW/2, palH + S.numLayers*pkgZ/2, PH/2);
+  // Auto-fit radius based on size
+  const diag=Math.sqrt(PW*PW+PH*PH+(S.numLayers*pkgZ)*(S.numLayers*pkgZ));
+  orbit.radius=Math.max(diag*1.6, 2000);
+
+  updateCamera();
+  render3D();
+}
+
+function updateCamera() {
+  const x=center3d.x + orbit.radius*Math.sin(orbit.phi)*Math.cos(orbit.theta);
+  const y=center3d.y + orbit.radius*Math.cos(orbit.phi);
+  const z=center3d.z + orbit.radius*Math.sin(orbit.phi)*Math.sin(orbit.theta);
+  camera3d.position.set(x,y,z);
+  camera3d.lookAt(center3d);
+}
+
+function render3D() {
+  if (renderer3d) renderer3d.render(scene3d, camera3d);
+}
+
+function setupOrbitControls(canvas) {
+  let dragging=false, lastX=0, lastY=0;
+  canvas.addEventListener('mousedown', e => {
+    dragging=true; lastX=e.clientX; lastY=e.clientY;
+    canvas.classList.add('dragging');
+  });
+  window.addEventListener('mouseup', () => { dragging=false; canvas.classList.remove('dragging'); });
+  canvas.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const dx=e.clientX-lastX, dy=e.clientY-lastY;
+    lastX=e.clientX; lastY=e.clientY;
+    orbit.theta -= dx*0.008;
+    orbit.phi   -= dy*0.008;
+    orbit.phi = Math.max(0.1, Math.min(Math.PI*0.499, orbit.phi));
+    updateCamera(); render3D();
+  });
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    orbit.radius *= (1 + e.deltaY*0.0012);
+    orbit.radius = Math.max(800, Math.min(20000, orbit.radius));
+    updateCamera(); render3D();
+  }, {passive:false});
+
+  // Touch
+  let lastTouchDist=0;
+  canvas.addEventListener('touchstart', e=>{
+    if(e.touches.length===1){
+      dragging=true;
+      lastX=e.touches[0].clientX; lastY=e.touches[0].clientY;
+    } else if(e.touches.length===2){
+      dragging=false;
+      const dx=e.touches[0].clientX-e.touches[1].clientX;
+      const dy=e.touches[0].clientY-e.touches[1].clientY;
+      lastTouchDist=Math.hypot(dx,dy);
+    }
+  },{passive:true});
+  canvas.addEventListener('touchmove', e=>{
+    e.preventDefault();
+    if(e.touches.length===1 && dragging){
+      const dx=e.touches[0].clientX-lastX, dy=e.touches[0].clientY-lastY;
+      lastX=e.touches[0].clientX; lastY=e.touches[0].clientY;
+      orbit.theta-=dx*0.008; orbit.phi-=dy*0.008;
+      orbit.phi=Math.max(0.1,Math.min(Math.PI*0.499,orbit.phi));
+      updateCamera(); render3D();
+    } else if(e.touches.length===2){
+      const dx=e.touches[0].clientX-e.touches[1].clientX;
+      const dy=e.touches[0].clientY-e.touches[1].clientY;
+      const dist=Math.hypot(dx,dy);
+      const delta=lastTouchDist-dist;
+      orbit.radius*=(1+delta*0.005);
+      orbit.radius=Math.max(800,Math.min(20000,orbit.radius));
+      lastTouchDist=dist;
+      updateCamera(); render3D();
+    }
+  },{passive:false});
+  canvas.addEventListener('touchend', ()=>{ dragging=false; });
+}
+
+// ════════════════════════════════════════════════════════
+//  VIEW SWITCH
+// ════════════════════════════════════════════════════════
+function setView(v) {
+  S.view=v;
+  document.body.classList.toggle('mode-2d', v==='2d');
+  document.body.classList.toggle('mode-3d', v==='3d');
+  document.getElementById('tab2d').classList.toggle('active', v==='2d');
+  document.getElementById('tab3d').classList.toggle('active', v==='3d');
+  document.getElementById('layerBar').classList.toggle('hidden', v==='3d');
+  if(v==='3d'){
+    init3D();
+    build3D();
+    document.getElementById('statusBar').textContent='Arrastra para girar · Rueda para zoom · Pellizca en táctil';
+  } else {
+    render();
+    document.getElementById('statusBar').textContent='Clic sobre el palé para añadir · Arrastra para mover';
+  }
+}
+
+// ════════════════════════════════════════════════════════
+//  LAYER MANAGEMENT
+// ════════════════════════════════════════════════════════
+function setEditLayer(which) {
+  S.editLayer=which;
+  S.sel=null;
+  document.getElementById('pillOdd').classList.toggle('active', which==='odd');
+  document.getElementById('pillEven').classList.toggle('active', which==='even');
+  document.getElementById('pillEven').classList.toggle('even', which==='even');
+  document.getElementById('pillOdd').classList.toggle('even', which==='odd' && false);
+  render();
+}
+
+function copyLayer() {
+  saveHist();
+  const src=S.editLayer;
+  const dst=src==='odd'?'even':'odd';
+  S.layers[dst]=JSON.parse(JSON.stringify(S.layers[src]));
+  S.activeFm[dst]=S.activeFm[src];
+  render();
+  if(S.view==='3d') build3D();
+}
+
+function mirrorLayer() {
+  saveHist();
+  const arr=L();
+  // Rotate 180° around pallet center → x'=PW-x-w, y'=PH-y-h
+  // Margin stays satisfied since the area is symmetric
+  arr.forEach(p=>{
+    p.x = S.pallet.w - p.x - p.w;
+    p.y = S.pallet.h - p.y - p.h;
+  });
+  render();
+  if(S.view==='3d') build3D();
+}
+
+// ════════════════════════════════════════════════════════
+//  MOUSE — drag with collision response (2D)
 // ════════════════════════════════════════════════════════
 let mDown=false;
 
 CV.addEventListener('mousedown',e=>{
+  if(S.view!=='2d') return;
   const r=CV.getBoundingClientRect();
   const scX=CW/r.width,scY=CH/r.height;
   const cx=(e.clientX-r.left)*scX,cy=(e.clientY-r.top)*scY;
@@ -639,65 +946,68 @@ CV.addEventListener('mousedown',e=>{
   } else {
     S.sel=null;
     const mm=c2mm(cx,cy);
-    const mx=snapV(mm.x),my=snapV(mm.y);
     const {w,h}=S.pkg;
-    // Only place if inside pallet AND no collision
-    if(mx>=0&&my>=0&&mx+w<=S.pallet.w&&my+h<=S.pallet.h){
+    const M=S.margin;
+    // Center package on cursor and clamp inside the effective area, so a click
+    // anywhere on the pallet lands the package in a valid spot (not just when
+    // the cursor is in the top-left region).
+    let mx=snapV(mm.x - w/2);
+    let my=snapV(mm.y - h/2);
+    mx=Math.max(M,Math.min(mx,S.pallet.w-M-w));
+    my=Math.max(M,Math.min(my,S.pallet.h-M-h));
+    // Guard: package must fit inside the effective area at all
+    const fits = mx>=M-EPS && my>=M-EPS &&
+                 mx+w<=S.pallet.w-M+EPS && my+h<=S.pallet.h-M+EPS;
+    if(fits){
       const test={x:mx,y:my,w,h};
       if(!hasCollision(test,-1)){
         saveHist();
         const np={id:S.nextId++,x:mx,y:my,w,h,rotated:false};
-        S.pkgs.push(np); S.sel=np.id; S.activeFm=null;
+        L().push(np); S.sel=np.id; S.activeFm[S.editLayer]=null;
         S.drag={id:np.id,startCx:cx,startCy:cy,origX:mx,origY:my};
+        // Remember for dblclick guard so the fresh package isn't rotated
+        S.justAdded={id:np.id,ts:Date.now()};
+      } else {
+        document.getElementById('statusBar').textContent =
+          '⚠ Aquí no cabe: choca con otro paquete. Prueba a mover el cursor.';
       }
+    } else {
+      document.getElementById('statusBar').textContent =
+        '⚠ El paquete es mayor que el área útil del palé (revisa margen o dimensiones).';
     }
   }
   render();
 });
 
 CV.addEventListener('mousemove',e=>{
+  if(S.view!=='2d') return;
   const r=CV.getBoundingClientRect();
   const scX=CW/r.width,scY=CH/r.height;
   const cx=(e.clientX-r.left)*scX,cy=(e.clientY-r.top)*scY;
-
-  // Cursor
   const hit=pkgAt(cx,cy);
   CV.style.cursor=hit?(mDown&&S.drag?'grabbing':'grab'):'crosshair';
-
-  // Status
   const mm=c2mm(cx,cy);
   const inB=mm.x>=0&&mm.x<=S.pallet.w&&mm.y>=0&&mm.y<=S.pallet.h;
   document.getElementById('statusBar').textContent=inB
-    ?`X: ${Math.round(mm.x)} mm  ·  Y: ${Math.round(mm.y)} mm  ·  Palé: ${S.pallet.w}×${S.pallet.h}  ·  Caja: ${S.pkg.w}×${S.pkg.h} mm`
+    ?`X: ${Math.round(mm.x)} mm  ·  Y: ${Math.round(mm.y)} mm  ·  Capa ${S.editLayer==='odd'?'IMPAR':'PAR'}  ·  Caja: ${S.pkg.w}×${S.pkg.h} mm`
     :'Fuera del palé';
-
   if(!mDown||!S.drag) return;
-
   const s=scale();
   const dx=(cx-S.drag.startCx)/s, dy=(cy-S.drag.startCy)/s;
-  const p=S.pkgs.find(p=>p.id===S.drag.id);
+  const p=L().find(p=>p.id===S.drag.id);
   if(!p) return;
-
-  let nx=Math.max(0,Math.min(snapV(S.drag.origX+dx),S.pallet.w-p.w));
-  let ny=Math.max(0,Math.min(snapV(S.drag.origY+dy),S.pallet.h-p.h));
-
+  const M=S.margin;
+  let nx=Math.max(M,Math.min(snapV(S.drag.origX+dx),S.pallet.w-M-p.w));
+  let ny=Math.max(M,Math.min(snapV(S.drag.origY+dy),S.pallet.h-M-p.h));
   const full={...p,x:nx,y:ny};
-  if(!hasCollision(full,p.id)){
-    // Full move OK
-    p.x=nx; p.y=ny; S.blocked=false;
-  } else {
-    // Try slide along X only
+  if(!hasCollision(full,p.id)){ p.x=nx; p.y=ny; S.blocked=false; }
+  else {
     const slideX={...p,x:nx,y:p.y};
-    if(!hasCollision(slideX,p.id)){
-      p.x=nx; S.blocked=false;
-    } else {
-      // Try slide along Y only
+    if(!hasCollision(slideX,p.id)){ p.x=nx; S.blocked=false; }
+    else {
       const slideY={...p,x:p.x,y:ny};
-      if(!hasCollision(slideY,p.id)){
-        p.y=ny; S.blocked=false;
-      } else {
-        S.blocked=true; // fully blocked → stay, show red
-      }
+      if(!hasCollision(slideY,p.id)){ p.y=ny; S.blocked=false; }
+      else { S.blocked=true; }
     }
   }
   render();
@@ -706,24 +1016,32 @@ CV.addEventListener('mousemove',e=>{
 CV.addEventListener('mouseup',()=>{ mDown=false; S.drag=null; S.blocked=false; render(); });
 CV.addEventListener('mouseleave',()=>{
   mDown=false; S.drag=null; S.blocked=false;
-  document.getElementById('statusBar').textContent='Clic sobre el palé para añadir · Arrastra para mover (sin solapamiento)';
+  if(S.view==='2d') document.getElementById('statusBar').textContent='Clic sobre el palé para añadir · Arrastra para mover';
   render();
 });
 
 CV.addEventListener('dblclick',e=>{
+  if(S.view!=='2d') return;
   const r=CV.getBoundingClientRect();
   const scX=CW/r.width,scY=CH/r.height;
   const cx=(e.clientX-r.left)*scX,cy=(e.clientY-r.top)*scY;
   const hit=pkgAt(cx,cy);
-  if(hit){S.sel=hit.id;rotateSelected();}
+  if(!hit) return;
+  // If this dblclick is the second click of a fast double-tap on empty space,
+  // the first click just placed this package — don't rotate it.
+  if(S.justAdded && S.justAdded.id===hit.id && Date.now()-S.justAdded.ts < 500){
+    S.justAdded=null;
+    return;
+  }
+  S.sel=hit.id;
+  rotateSelected();
 });
 
-// Touch support
-CV.addEventListener('touchstart',e=>{e.preventDefault();const t=e.touches[0];
+CV.addEventListener('touchstart',e=>{if(S.view!=='2d')return;e.preventDefault();const t=e.touches[0];
   CV.dispatchEvent(new MouseEvent('mousedown',{clientX:t.clientX,clientY:t.clientY}));},{passive:false});
-CV.addEventListener('touchmove',e=>{e.preventDefault();const t=e.touches[0];
+CV.addEventListener('touchmove',e=>{if(S.view!=='2d')return;e.preventDefault();const t=e.touches[0];
   CV.dispatchEvent(new MouseEvent('mousemove',{clientX:t.clientX,clientY:t.clientY}));},{passive:false});
-CV.addEventListener('touchend',e=>{e.preventDefault();
+CV.addEventListener('touchend',e=>{if(S.view!=='2d')return;e.preventDefault();
   CV.dispatchEvent(new MouseEvent('mouseup',{}));},{passive:false});
 
 // ════════════════════════════════════════════════════════
@@ -731,6 +1049,7 @@ CV.addEventListener('touchend',e=>{e.preventDefault();
 // ════════════════════════════════════════════════════════
 document.addEventListener('keydown',e=>{
   if(['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
+  if(S.view!=='2d') return;
   if(e.key==='r'||e.key==='R'){e.preventDefault();rotateSelected();}
   if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();deleteSelected();}
   if(e.key==='Escape'){S.sel=null;render();}
@@ -742,12 +1061,13 @@ document.addEventListener('keydown',e=>{
 //  PACKAGE ACTIONS
 // ════════════════════════════════════════════════════════
 function rotateSelected(){
-  const p=S.pkgs.find(p=>p.id===S.sel);if(!p) return;
+  const p=L().find(p=>p.id===S.sel);if(!p) return;
   const nw=p.h,nh=p.w;
-  const nx=Math.min(p.x,S.pallet.w-nw),ny=Math.min(p.y,S.pallet.h-nh);
-  if(nx<0||ny<0) return;
+  const M=S.margin;
+  const nx=Math.min(p.x,S.pallet.w-M-nw),ny=Math.min(p.y,S.pallet.h-M-nh);
+  if(nx<M||ny<M) return;
   const test={x:nx,y:ny,w:nw,h:nh};
-  if(hasCollision(test,p.id)) return; // can't rotate here, would collide
+  if(hasCollision(test,p.id)) return;
   saveHist();
   p.w=nw;p.h=nh;p.x=nx;p.y=ny;p.rotated=!p.rotated;
   render();
@@ -756,50 +1076,55 @@ function rotateSelected(){
 function deleteSelected(){
   if(!S.sel) return;
   saveHist();
-  S.pkgs=S.pkgs.filter(p=>p.id!==S.sel);
-  S.sel=null;S.activeFm=null;render();
+  setL(L().filter(p=>p.id!==S.sel));
+  S.sel=null;S.activeFm[S.editLayer]=null;render();
 }
 
 function duplicateSelected(){
-  const p=S.pkgs.find(p=>p.id===S.sel);if(!p) return;
+  const p=L().find(p=>p.id===S.sel);if(!p) return;
   const candidates=[{x:p.x+p.w,y:p.y},{x:p.x,y:p.y+p.h},{x:p.x-p.w,y:p.y},{x:p.x,y:p.y-p.h}];
+  const M=S.margin;
   for(const c of candidates){
-    if(c.x<0||c.y<0||c.x+p.w>S.pallet.w||c.y+p.h>S.pallet.h) continue;
+    if(c.x<M||c.y<M||c.x+p.w>S.pallet.w-M||c.y+p.h>S.pallet.h-M) continue;
     const test={x:c.x,y:c.y,w:p.w,h:p.h};
     if(!hasCollision(test,-1)){
       saveHist();
       const np={...p,id:S.nextId++,x:c.x,y:c.y};
-      S.pkgs.push(np);S.sel=np.id;S.activeFm=null;render();return;
+      L().push(np);S.sel=np.id;S.activeFm[S.editLayer]=null;render();return;
     }
   }
 }
 
-function clearAll(){
-  if(!S.pkgs.length) return;
-  saveHist();S.pkgs=[];S.sel=null;S.activeFm=null;render();
+function clearLayer(){
+  if(!L().length) return;
+  saveHist();
+  setL([]);S.sel=null;S.activeFm[S.editLayer]=null;render();
 }
 
 function setPallet(w,h){
   S.pallet={w,h};
   document.getElementById('palletW').value=w;
   document.getElementById('palletH').value=h;
-  S.pkgs=[];S.sel=null;S.activeFm=null;lastFmKey='';render();
+  S.layers.odd=[];S.layers.even=[];S.sel=null;
+  S.activeFm={odd:null,even:null};lastFmKey='';
+  if(S.view==='3d') build3D(); else render();
 }
 
 // ════════════════════════════════════════════════════════
 //  UNDO
 // ════════════════════════════════════════════════════════
 function saveHist(){
-  S.history.push(JSON.parse(JSON.stringify(S.pkgs)));
+  S.history.push({layers:JSON.parse(JSON.stringify(S.layers)), editLayer:S.editLayer});
   if(S.history.length>40) S.history.shift();
 }
 function undo(){
   if(!S.history.length) return;
-  S.pkgs=S.history.pop();S.sel=null;render();
+  const h=S.history.pop();
+  S.layers=h.layers;S.sel=null;render();
 }
 
 // ════════════════════════════════════════════════════════
-//  CONFIG INPUTS
+//  CONFIG
 // ════════════════════════════════════════════════════════
 function readCfg(){
   S.pallet.w=+document.getElementById('palletW').value||1200;
@@ -810,12 +1135,23 @@ function readCfg(){
   S.pkg.kg=+document.getElementById('pkgWeight').value||15;
   S.snap=document.getElementById('snapToggle').checked;
   S.snapSz=+document.getElementById('snapSize').value||10;
+  S.margin=Math.max(0,+document.getElementById('margin').value||0);
+  S.numLayers=Math.max(1,Math.floor(+document.getElementById('numLayers').value||1));
 }
 
-['palletW','palletH','pkgW','pkgH','pkgZ','pkgWeight','snapSize'].forEach(id=>{
+['palletW','palletH','pkgW','pkgH','margin'].forEach(id=>{
   const el=document.getElementById(id);
-  el.addEventListener('change',()=>{readCfg();S.pkgs=[];S.sel=null;S.activeFm=null;lastFmKey='';render();});
+  el.addEventListener('change',()=>{
+    readCfg();S.layers.odd=[];S.layers.even=[];S.sel=null;
+    S.activeFm={odd:null,even:null};lastFmKey='';
+    if(S.view==='3d') build3D(); else render();
+  });
   el.addEventListener('input', ()=>{readCfg();render();});
+});
+['pkgZ','pkgWeight','numLayers','snapSize'].forEach(id=>{
+  const el=document.getElementById(id);
+  el.addEventListener('change',()=>{readCfg();if(S.view==='3d') build3D(); else render();});
+  el.addEventListener('input',()=>{readCfg();if(S.view==='3d') build3D(); else render();});
 });
 document.getElementById('snapToggle').addEventListener('change',()=>{readCfg();render();});
 
