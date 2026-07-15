@@ -188,6 +188,7 @@ header{background:var(--surface);border-bottom:2px solid var(--border);padding:1
 
     <div>
       <div class="sec-title">🛠 Acciones</div>
+      <button class="btn btn-teal" onclick="addPackageAtCursor()" style="border-color:var(--teal);color:var(--teal);">➕ Añadir paquete (A)</button>
       <div class="btn-group">
         <button class="btn btn-teal" onclick="rotateSelected()">⟳ Rotar</button>
         <button class="btn btn-teal" onclick="duplicateSelected()">⧉ Duplic.</button>
@@ -199,6 +200,7 @@ header{background:var(--surface);border-bottom:2px solid var(--border);padding:1
     <div>
       <div class="sec-title">⌨ Atajos</div>
       <div class="shortcut-list">
+        <b>A</b> — Añadir paquete en cursor<br>
         <b>R</b> — Rotar seleccionado<br>
         <b>Supr</b> — Borrar seleccionado<br>
         <b>Ctrl+Z</b> — Deshacer<br>
@@ -253,7 +255,7 @@ header{background:var(--surface);border-bottom:2px solid var(--border);padding:1
         Zona de margen
       </div>
     </div>
-    <div class="status-bar" id="statusBar">Clic sobre el palé para añadir · Arrastra para mover</div>
+    <div class="status-bar" id="statusBar">Clic para añadir · Tecla A para añadir en cursor · Arrastra para mover</div>
   </div>
 
   <!-- RIGHT SIDEBAR -->
@@ -315,6 +317,7 @@ const S = {
   blocked:   false,
   view:      '2d',
   justAdded: null,   // {id, ts} — used to suppress rotate on double-tap-to-add
+  cursor:    null,   // {x, y} in mm — last known mouse position over pallet
 };
 function L(){ return S.layers[S.editLayer]; }
 function setL(arr){ S.layers[S.editLayer]=arr; }
@@ -887,7 +890,7 @@ function setView(v) {
     document.getElementById('statusBar').textContent='Arrastra para girar · Rueda para zoom · Pellizca en táctil';
   } else {
     render();
-    document.getElementById('statusBar').textContent='Clic sobre el palé para añadir · Arrastra para mover';
+    document.getElementById('statusBar').textContent='Clic para añadir · Tecla A para añadir en cursor · Arrastra para mover';
   }
 }
 
@@ -964,8 +967,9 @@ CV.addEventListener('mousedown',e=>{
         saveHist();
         const np={id:S.nextId++,x:mx,y:my,w,h,rotated:false};
         L().push(np); S.sel=np.id; S.activeFm[S.editLayer]=null;
-        S.drag={id:np.id,startCx:cx,startCy:cy,origX:mx,origY:my};
-        // Remember for dblclick guard so the fresh package isn't rotated
+        // NOTE: drag is intentionally NOT started here. A click just places
+        // the package. To move it, click on it again and drag. This avoids
+        // the package following the cursor when the click has micro-movement.
         S.justAdded={id:np.id,ts:Date.now()};
       } else {
         document.getElementById('statusBar').textContent =
@@ -988,6 +992,7 @@ CV.addEventListener('mousemove',e=>{
   CV.style.cursor=hit?(mDown&&S.drag?'grabbing':'grab'):'crosshair';
   const mm=c2mm(cx,cy);
   const inB=mm.x>=0&&mm.x<=S.pallet.w&&mm.y>=0&&mm.y<=S.pallet.h;
+  S.cursor = inB ? {x:mm.x, y:mm.y} : null;
   document.getElementById('statusBar').textContent=inB
     ?`X: ${Math.round(mm.x)} mm  ·  Y: ${Math.round(mm.y)} mm  ·  Capa ${S.editLayer==='odd'?'IMPAR':'PAR'}  ·  Caja: ${S.pkg.w}×${S.pkg.h} mm`
     :'Fuera del palé';
@@ -1015,8 +1020,8 @@ CV.addEventListener('mousemove',e=>{
 
 CV.addEventListener('mouseup',()=>{ mDown=false; S.drag=null; S.blocked=false; render(); });
 CV.addEventListener('mouseleave',()=>{
-  mDown=false; S.drag=null; S.blocked=false;
-  if(S.view==='2d') document.getElementById('statusBar').textContent='Clic sobre el palé para añadir · Arrastra para mover';
+  mDown=false; S.drag=null; S.blocked=false; S.cursor=null;
+  if(S.view==='2d') document.getElementById('statusBar').textContent='Clic para añadir · Tecla A para añadir en cursor · Arrastra para mover';
   render();
 });
 
@@ -1050,6 +1055,7 @@ CV.addEventListener('touchend',e=>{if(S.view!=='2d')return;e.preventDefault();
 document.addEventListener('keydown',e=>{
   if(['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
   if(S.view!=='2d') return;
+  if(e.key==='a'||e.key==='A'){e.preventDefault();addPackageAtCursor();}
   if(e.key==='r'||e.key==='R'){e.preventDefault();rotateSelected();}
   if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();deleteSelected();}
   if(e.key==='Escape'){S.sel=null;render();}
@@ -1060,6 +1066,49 @@ document.addEventListener('keydown',e=>{
 // ════════════════════════════════════════════════════════
 //  PACKAGE ACTIONS
 // ════════════════════════════════════════════════════════
+function addPackageAtCursor(){
+  const {w,h}=S.pkg, M=S.margin;
+  // Sanity: package fits in effective area at all
+  if(S.pallet.w-2*M < w || S.pallet.h-2*M < h){
+    document.getElementById('statusBar').textContent =
+      '⚠ El paquete es mayor que el área útil del palé (revisa margen o dimensiones).';
+    return;
+  }
+  // 1) Try at last known cursor position
+  if(S.cursor){
+    let mx=snapV(S.cursor.x - w/2);
+    let my=snapV(S.cursor.y - h/2);
+    mx=Math.max(M,Math.min(mx,S.pallet.w-M-w));
+    my=Math.max(M,Math.min(my,S.pallet.h-M-h));
+    if(!hasCollision({x:mx,y:my,w,h},-1)){
+      saveHist();
+      const np={id:S.nextId++,x:mx,y:my,w,h,rotated:false};
+      L().push(np); S.sel=np.id; S.activeFm[S.editLayer]=null;
+      S.justAdded={id:np.id,ts:Date.now()};
+      render();
+      return;
+    }
+  }
+  // 2) Fallback: scan for the first free spot on a snap grid
+  const step=Math.max(S.snapSz, 5);
+  for(let y=M; y+h<=S.pallet.h-M+EPS; y+=step){
+    for(let x=M; x+w<=S.pallet.w-M+EPS; x+=step){
+      if(!hasCollision({x,y,w,h},-1)){
+        saveHist();
+        const np={id:S.nextId++,x,y,w,h,rotated:false};
+        L().push(np); S.sel=np.id; S.activeFm[S.editLayer]=null;
+        S.justAdded={id:np.id,ts:Date.now()};
+        render();
+        document.getElementById('statusBar').textContent =
+          `Añadido en el primer hueco libre: X=${Math.round(x)} Y=${Math.round(y)} mm`;
+        return;
+      }
+    }
+  }
+  document.getElementById('statusBar').textContent =
+    '⚠ No queda ningún hueco libre en la capa actual.';
+}
+
 function rotateSelected(){
   const p=L().find(p=>p.id===S.sel);if(!p) return;
   const nw=p.h,nh=p.w;
