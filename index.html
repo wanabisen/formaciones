@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PaletForma — Distribución de Paquetes</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
 :root {
   --bg:#09182a; --surface:#0f2340; --surface2:#152c50; --border:#1c3a68;
@@ -697,12 +697,17 @@ function renderMini(mc,pkgs) {
 //  3D VIEW (Three.js)
 // ════════════════════════════════════════════════════════
 let scene3d=null, camera3d=null, renderer3d=null, pkgGroup=null, palletMesh=null;
+let center3d=null; // Lazy: only created after THREE is confirmed loaded
 const orbit = { theta: -Math.PI*0.7, phi: Math.PI*0.35, radius: 3200 };
-const center3d = new THREE.Vector3();
 
 function init3D() {
-  if (scene3d) return;
+  if (scene3d) return true;
+  if (typeof THREE === 'undefined') {
+    console.error('Three.js not loaded');
+    return false;
+  }
   const canvas=document.getElementById('canvas3d');
+  center3d=new THREE.Vector3();
   scene3d=new THREE.Scene();
   scene3d.background=new THREE.Color(0x07111e);
   // fog adds depth
@@ -731,6 +736,7 @@ function init3D() {
   scene3d.add(pkgGroup);
 
   setupOrbitControls(canvas);
+  return true;
 }
 
 function clearGroup(g) {
@@ -746,7 +752,7 @@ function clearGroup(g) {
 }
 
 function build3D() {
-  if (!scene3d) init3D();
+  if (!scene3d && !init3D()) return;
   clearGroup(pkgGroup);
   if (palletMesh){
     scene3d.remove(palletMesh);
@@ -885,7 +891,17 @@ function setView(v) {
   document.getElementById('tab3d').classList.toggle('active', v==='3d');
   document.getElementById('layerBar').classList.toggle('hidden', v==='3d');
   if(v==='3d'){
-    init3D();
+    if (!init3D()) {
+      document.getElementById('statusBar').textContent =
+        '⚠ No se pudo cargar Three.js (revisa la conexión a internet).';
+      // Revert to 2D
+      S.view='2d';
+      document.body.classList.add('mode-2d');
+      document.body.classList.remove('mode-3d');
+      document.getElementById('tab2d').classList.add('active');
+      document.getElementById('tab3d').classList.remove('active');
+      return;
+    }
     build3D();
     document.getElementById('statusBar').textContent='Arrastra para girar · Rueda para zoom · Pellizca en táctil';
   } else {
